@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jubo 集團總覽</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;900&display=swap');
+
+:root {
+  --teal:#009688; --teal-mid:#00B4A4; --teal-light:#E0F5F3; --teal-xlight:#F0FAF9; --accent:#00796B;
+  --bg:#F7F9FA; --white:#FFFFFF; --surface2:#F2F6F5;
+  --border:#DDE4E3; --border2:#EEF2F1;
+  --text:#1A2E2B; --text-2:#4A6360; --text-3:#8AA3A0;
+  --red:#D32F2F; --red-light:#FFEBEE;
+  --yellow:#F57C00; --yellow-light:#FFF3E0;
+  --green:#2E7D32; --green-light:#E8F5E9;
+  --blue:#1565C0; --blue-light:#E3F2FD;
+  --purple:#6A1B9A; --purple-light:#F3E5F5;
+  --pink:#C2185B; --pink-light:#FCE4EC;
+  --cyan:#00838F; --cyan-light:#E0F7FA;
+  --sidebar-w:220px; --header-h:60px;
+  --radius:12px; --radius-sm:8px;
+  --shadow:0 1px 4px rgba(0,0,0,.06),0 2px 12px rgba(0,0,0,.04);
+  --shadow-md:0 2px 8px rgba(0,0,0,.08),0 4px 20px rgba(0,0,0,.06);
+  --font-xs:13px; --font-sm:14px; --font-md:15px; --font-lg:17px;
+  --font-xl:20px; --font-2xl:26px; --font-3xl:32px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);font-size:var(--font-md);line-height:1.6;-webkit-font-smoothing:antialiased;}
+
+/* ── APP SHELL ── */
+.app{display:flex;flex-direction:column;min-height:100vh;}
+
+/* ── HEADER ── */
+.header{
+  position:sticky;top:0;z-index:100;height:var(--header-h);
+  background:var(--white);border-bottom:2px solid var(--teal-light);
+  display:flex;align-items:center;padding:0 24px;gap:16px;
+  box-shadow:0 2px 8px rgba(0,150,136,.08);
+}
+.ham-btn{display:none;width:38px;height:38px;border-radius:8px;background:var(--surface2);border:1.5px solid var(--border);cursor:pointer;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.logo-text{line-height:1.1;}
+.logo-name{font-size:22px;font-weight:900;color:var(--teal);letter-spacing:-0.5px;}
+.logo-sub{font-size:13px;font-weight:700;color:var(--text-2);letter-spacing:.5px;}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.user-btn{display:flex;align-items:center;gap:10px;background:var(--teal-xlight);border:1.5px solid var(--teal-light);border-radius:var(--radius-sm);padding:6px 14px;cursor:pointer;}
+.avatar{width:28px;height:28px;border-radius:7px;background:var(--teal);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.user-name{font-size:var(--font-sm);font-weight:600;}
+.user-role{font-size:12px;color:var(--text-2);}
+
+/* ── BODY ── */
+.body{display:flex;flex:1;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:199;}
+.overlay.show{display:block;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;background:var(--white);
+  border-right:1px solid var(--border);padding:18px 12px 20px;
+  display:flex;flex-direction:column;
+  position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto;
+}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:var(--radius-sm);cursor:pointer;font-size:var(--font-sm);font-weight:500;color:var(--text-2);transition:all .15s;margin-bottom:2px;border:1.5px solid transparent;}
+.nav-item:hover{background:var(--teal-xlight);color:var(--teal);}
+.nav-item.active{background:var(--teal-light);color:var(--accent);border-color:rgba(0,150,136,.2);font-weight:700;}
+.nav-icon{font-size:17px;width:22px;text-align:center;flex-shrink:0;}
+.sidebar-footer{margin-top:auto;padding:12px 14px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border2);}
+.footer-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;}
+.footer-row:last-child{margin-bottom:0;}
+.footer-label{color:var(--text-3);}
+.footer-val{color:var(--text-2);font-weight:600;}
+
+/* ── CONTENT ── */
+.content{flex:1;padding:28px 32px;max-width:1180px;}
+.page{display:none;animation:fadeIn .2s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* ── PAGE HEADER ── */
+.page-hdr{margin-bottom:22px;}
+.page-hdr-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;}
+.page-title{font-size:var(--font-3xl);font-weight:900;letter-spacing:-1px;}
+.page-sub{font-size:var(--font-sm);color:var(--text-2);margin-top:3px;}
+.date-chip{font-size:var(--font-sm);color:var(--text-2);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-weight:500;}
+
+/* ── BUTTONS ── */
+.btn-primary{background:var(--teal);color:white;border:none;border-radius:var(--radius-sm);padding:9px 18px;font-size:var(--font-sm);font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px;transition:background .15s;}
+.btn-primary:hover{background:var(--accent);}
+.btn-outline{background:white;color:var(--teal);border:1.5px solid var(--teal);border-radius:var(--radius-sm);padding:8px 16px;font-size:var(--font-sm);font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px;transition:all .15s;}
+.btn-outline:hover{background:var(--teal-xlight);}
+.btn-ghost{background:transparent;color:var(--text-2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 14px;font-size:var(--font-sm);font-weight:500;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .15s;}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
+
+/* ── TABS ── */
+.tab-bar{display:flex;gap:0;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:4px;margin-bottom:20px;width:fit-content;}
+.tab-btn{padding:9px 22px;border-radius:6px;font-size:var(--font-sm);font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s;color:var(--text-2);background:transparent;}
+.tab-btn.active{background:white;color:var(--teal);box-shadow:var(--shadow);}
+.tab-btn:hover:not(.active){color:var(--text);}
+
+/* ── SECTION ── */
+.section-block{margin-bottom:26px;}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.section-chip{display:inline-flex;align-items:center;gap:6px;background:var(--teal);color:white;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:700;letter-spacing:.3px;}
+.section-chip.day{background:var(--yellow);}
+.section-chip.home{background:var(--green);}
+
+/* ── STAT GRID ── */
+.stat-grid{display:grid;gap:14px;margin-bottom:14px;}
+.g2{grid-template-columns:repeat(2,1fr);}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g4{grid-template-columns:repeat(4,1fr);}
+.g5{grid-template-columns:repeat(5,1fr);}
+
+/* ── STAT CARD ── */
+.stat-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);transition:box-shadow .15s,border-color .15s;}
+.stat-card:hover{box-shadow:var(--shadow-md);border-color:var(--teal-light);}
+.stat-card.accent{border-color:var(--teal-light);background:var(--teal-xlight);}
+.stat-card.warn{border-color:#FFD0B5;background:#FFF8F3;}
+.stat-card.danger{border-color:#FFCDD2;background:#FFF5F5;}
+.stat-label{font-size:12px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.stat-value{font-size:var(--font-3xl);font-weight:900;line-height:1;letter-spacing:-1px;color:var(--text);}
+.stat-value.teal{color:var(--teal);}
+.stat-value.red{color:var(--red);}
+.stat-value.yellow{color:var(--yellow);}
+.stat-value.green{color:var(--green);}
+.stat-unit{font-size:var(--font-lg);font-weight:500;color:var(--text-2);}
+.stat-delta{font-size:12px;font-weight:600;margin-top:6px;display:flex;align-items:center;gap:4px;}
+.up{color:var(--teal);} .dn{color:var(--red);} .flat{color:var(--text-3);}
+.stat-sub{font-size:12px;color:var(--text-3);margin-top:4px;}
+
+/* ── CARD ── */
+.card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.card-title{font-size:var(--font-lg);font-weight:700;margin-bottom:3px;}
+.card-sub{font-size:var(--font-xs);color:var(--text-3);margin-bottom:14px;}
+
+/* ── LAYOUT HELPERS ── */
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.mb16{margin-bottom:16px;} .mb20{margin-bottom:20px;} .mb24{margin-bottom:24px;}
+
+/* ── PROGRESS BAR ── */
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text-3);margin-bottom:4px;}
+.prog-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;background:var(--teal);}
+.prog-fill.warn{background:var(--yellow);}
+.prog-fill.danger{background:var(--red);}
+
+/* ── BADGE ── */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;}
+.badge-ok{background:var(--green-light);color:var(--green);}
+.badge-warn{background:var(--yellow-light);color:var(--yellow);}
+.badge-danger{background:var(--red-light);color:var(--red);}
+
+/* ── TAG ── */
+.tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:5px;font-size:12px;font-weight:700;}
+.tag-res{background:var(--teal-light);color:var(--accent);}
+.tag-day{background:var(--yellow-light);color:var(--yellow);}
+.tag-home{background:var(--green-light);color:var(--green);}
+
+/* ── ALERT BANNER ── */
+.alert-banner{border-radius:var(--radius-sm);padding:13px 15px;display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;border:1.5px solid;}
+.alert-banner.danger{background:var(--red-light);border-color:#FFCDD2;}
+.alert-banner.warn{background:var(--yellow-light);border-color:#FFE0B2;}
+.alert-banner.info{background:var(--teal-light);border-color:rgba(0,150,136,.25);}
+.alert-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.alert-title{font-size:var(--font-sm);font-weight:700;margin-bottom:3px;}
+.alert-title.danger{color:var(--red);} .alert-title.warn{color:var(--yellow);} .alert-title.info{color:var(--teal);}
+.alert-desc{font-size:var(--font-xs);color:var(--text-2);line-height:1.6;}
+.alert-cta{font-size:var(--font-xs);font-weight:700;color:var(--teal);cursor:pointer;margin-top:5px;display:inline-block;}
+
+/* ── INST CARD ── */
+.inst-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);transition:all .15s;cursor:pointer;}
+.inst-card:hover{border-color:var(--teal);box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.inst-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.inst-name{font-size:var(--font-md);font-weight:700;}
+.inst-id{font-size:12px;color:var(--text-3);margin-top:2px;}
+.inst-metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+.inst-m-label{font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+.inst-m-val{font-size:var(--font-xl);font-weight:800;letter-spacing:-0.5px;margin-top:2px;}
+.inst-footer{display:flex;align-items:center;justify-content:space-between;padding-top:11px;border-top:1px solid var(--border2);font-size:12px;color:var(--text-3);}
+.inst-link{font-size:12px;font-weight:700;color:var(--teal);cursor:pointer;}
+
+/* ── DONUT ── */
+.donut-svg{flex-shrink:0;}
+.legend-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border2);}
+.legend-row:last-child{border-bottom:none;}
+.legend-left{display:flex;align-items:center;gap:8px;}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.legend-name{font-size:var(--font-sm);color:var(--text-2);}
+.legend-num{font-size:var(--font-sm);font-weight:700;}
+.legend-pct{font-size:12px;color:var(--text-3);margin-left:4px;}
+
+/* ── METRIC CHIP (住民動態) ── */
+.metric-chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;}
+.m-chip{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:12px 16px;border-radius:10px;min-width:80px;flex:1;
+  border:1.5px solid var(--border2);background:var(--surface2);
+  transition:all .15s;cursor:default;
+}
+.m-chip:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.m-chip-val{font-size:22px;font-weight:900;line-height:1;letter-spacing:-0.5px;}
+.m-chip-label{font-size:11px;color:var(--text-2);margin-top:3px;font-weight:600;text-align:center;}
+.mc-blue{background:var(--blue-light);border-color:#BBDEFB;}
+.mc-teal{background:var(--teal-xlight);border-color:var(--teal-light);}
+.mc-red{background:var(--red-light);border-color:#FFCDD2;}
+.mc-yellow{background:var(--yellow-light);border-color:#FFE0B2;}
+.mc-purple{background:var(--purple-light);border-color:#E1BEE7;}
+.mc-pink{background:var(--pink-light);border-color:#F8BBD0;}
+.mc-cyan{background:var(--cyan-light);border-color:#B2EBF2;}
+.mc-green{background:var(--green-light);border-color:#C8E6C9;}
+
+/* ── LINE CHART SVG ── */
+.line-chart-svg{width:100%;height:80px;}
+
+/* ── MULTI-LINE LEGEND ── */
+.chart-legend{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap;}
+.chart-legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-2);}
+.cl-dot{width:10px;height:3px;border-radius:2px;flex-shrink:0;}
+
+/* ── BAR CHART ── */
+.bar-chart-wrap{display:flex;align-items:flex-end;gap:6px;height:80px;width:100%;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar-rect{width:100%;border-radius:4px 4px 0 0;min-height:4px;}
+.bar-label{font-size:10px;color:var(--text-3);font-weight:500;}
+
+/* ── HR ROLE ROWS ── */
+.role-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border2);}
+.role-row:last-child{border-bottom:none;}
+.role-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.role-name{font-size:var(--font-sm);color:var(--text-2);flex:1;}
+.role-count{font-size:var(--font-sm);font-weight:700;width:34px;text-align:right;}
+.role-pct{font-size:12px;color:var(--text-3);width:38px;text-align:right;}
+.role-bar-wrap{flex:2;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.role-bar-fill{height:100%;border-radius:3px;}
+
+/* ── RWD ── */
+@media(max-width:900px){
+  :root{--sidebar-w:0px;}
+  .sidebar{position:fixed;left:0;top:var(--header-h);width:260px;height:calc(100vh - var(--header-h));z-index:200;transform:translateX(-100%);transition:transform .25s;box-shadow:var(--shadow-md);}
+  .sidebar.open{transform:translateX(0);}
+  .ham-btn{display:flex;}
+  .content{padding:20px 16px;}
+  .g4,.g5{grid-template-columns:repeat(2,1fr);}
+  .g3{grid-template-columns:repeat(2,1fr);}
+  .row-2{grid-template-columns:1fr;}
+  .page-title{font-size:var(--font-2xl);}
+  .stat-value{font-size:var(--font-2xl);}
+  .tab-btn{padding:9px 14px;}
+}
+@media(max-width:560px){
+  .g4,.g5,.g3,.g2{grid-template-columns:1fr 1fr;}
+  .stat-value{font-size:22px;}
+  .page-title{font-size:22px;}
+}
+/* ── SHARE BUTTON ── */
+.share-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  background:transparent;border:1.5px solid var(--border);
+  border-radius:20px;padding:4px 11px;
+  font-size:12px;font-weight:600;color:var(--text-3);
+  cursor:pointer;font-family:inherit;transition:all .2s;
+  flex-shrink:0;
+}
+.share-btn:hover{border-color:#06C755;color:#06C755;background:#F0FFF4;}
+.share-btn svg{width:14px;height:14px;flex-shrink:0;}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:#1A2E2B;color:white;border-radius:10px;
+  padding:11px 20px;font-size:13px;font-weight:600;
+  box-shadow:0 4px 20px rgba(0,0,0,.2);
+  opacity:0;transition:all .3s;pointer-events:none;z-index:9999;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── CAPTURE OVERLAY ── */
+.capturing *{transition:none!important;}
+</style>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<body>
+<div id="toast" class="toast"></div>
+<div class="app">
+
+<!-- ══ HEADER ══ -->
+<header class="header">
+  <button class="ham-btn" onclick="toggleSidebar()">☰</button>
+  <div class="logo-text">
+    <div class="logo-name">Jubo</div>
+    <div class="logo-sub">集團總覽</div>
+  </div>
+  <div class="header-right">
+    <div class="user-btn">
+      <div class="avatar">管</div>
+      <div>
+        <div class="user-name">總部管理員</div>
+        <div class="user-role">集團總部</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="body">
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- ══ SIDEBAR ══ -->
+<nav class="sidebar" id="sidebar">
+  <div class="nav-item active" id="nav-home" onclick="goPage('home')"><span class="nav-icon">⊞</span>首頁總覽</div>
+  <div class="nav-item" id="nav-capacity" onclick="goPage('capacity')"><span class="nav-icon">📊</span>產能管理</div>
+  <div class="nav-item" id="nav-hr" onclick="goPage('hr')"><span class="nav-icon">👥</span>人力管理</div>
+  <div class="sidebar-footer">
+    <div class="footer-row"><span class="footer-label">數據更新</span><span class="footer-val">2026/03/10 00:00</span></div>
+  </div>
+</nav>
+
+<!-- ══ CONTENT ══ -->
+<main class="content">
+
+<!-- ════════════════ PAGE: HOME ════════════════ -->
+<div class="page active" id="page-home">
+  <div class="page-hdr">
+    <div class="page-hdr-row">
+      <div>
+        <div class="page-title">首頁總覽</div>
+        <div class="page-sub">以下是今日集團整體營運狀況</div>
+      </div>
+      <span class="date-chip">2026年3月10日　週二</span>
+    </div>
+  </div>
+
+  <!-- 旗下機構 -->
+  <div class="section-block">
+    <div style="font-size:16px;font-weight:800;margin-bottom:12px;">旗下機構總覽</div>
+    <div class="stat-grid g3 mb16">
+      <div class="stat-card accent" style="display:flex;align-items:center;gap:18px;">
+        <div style="font-size:48px;line-height:1;">🏠</div>
+        <div><div class="stat-label">住宿長照機構</div><div class="stat-value teal">2 <span class="stat-unit">間</span></div><div class="stat-sub">台北大安・桃園慈愛</div></div>
+      </div>
+      <div class="stat-card" style="display:flex;align-items:center;gap:18px;border-color:#FFE0B2;background:#FFFBF5;">
+        <div style="font-size:48px;line-height:1;">☀️</div>
+        <div><div class="stat-label">日間照顧機構</div><div class="stat-value yellow">2 <span class="stat-unit">間</span></div><div class="stat-sub">高雄幸福・台中建德</div></div>
+      </div>
+      <div class="stat-card" style="display:flex;align-items:center;gap:18px;border-color:#C8E6C9;background:#F6FBF6;">
+        <div style="font-size:48px;line-height:1;">🏡</div>
+        <div><div class="stat-label">居家服務機構</div><div class="stat-value green">2 <span class="stat-unit">間</span></div><div class="stat-sub">新北板橋・台南安康</div></div>
+      </div>
+    </div>
+
+    <!-- 全集團服務佔比 -->
+    <div class="card mb20">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">
+        <div><div class="card-title">全集團服務佔比</div><div class="card-sub" style="margin-bottom:0;">依服務類型統計今日個案 / 住民總人數</div></div>
+        <div style="text-align:right;"><div style="font-size:36px;font-weight:900;color:var(--teal);letter-spacing:-1px;line-height:1;">543</div><div style="font-size:13px;color:var(--text-3);margin-top:2px;">今日服務總人數</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:28px;flex-wrap:wrap;">
+        <svg viewBox="0 0 200 200" style="width:190px;height:190px;flex-shrink:0;">
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#EEF2F1" stroke-width="32"/>
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#009688" stroke-width="32" stroke-dasharray="261 503" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#F57C00" stroke-width="32" stroke-dasharray="90 503" stroke-dashoffset="-261" transform="rotate(-90 100 100)"/>
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#2E7D32" stroke-width="32" stroke-dasharray="152 503" stroke-dashoffset="-351" transform="rotate(-90 100 100)"/>
+          <text x="100" y="93" text-anchor="middle" font-size="22" font-weight="900" fill="#1A2E2B">543</text>
+          <text x="100" y="115" text-anchor="middle" font-size="13" fill="#8AA3A0">總人數</text>
+        </svg>
+        <div style="flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;min-width:260px;">
+          <div style="padding:16px;background:var(--teal-xlight);border:1.5px solid var(--teal-light);border-radius:var(--radius);text-align:center;">
+            <div style="width:12px;height:12px;border-radius:50%;background:var(--teal);margin:0 auto 8px;"></div>
+            <div style="font-size:13px;color:var(--text-2);font-weight:600;margin-bottom:6px;">住宿長照</div>
+            <div style="font-size:30px;font-weight:900;color:var(--teal);letter-spacing:-1px;line-height:1;">236</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:4px;">人・52%</div>
+          </div>
+          <div style="padding:16px;background:#FFFBF5;border:1.5px solid #FFE0B2;border-radius:var(--radius);text-align:center;">
+            <div style="width:12px;height:12px;border-radius:50%;background:var(--yellow);margin:0 auto 8px;"></div>
+            <div style="font-size:13px;color:var(--text-2);font-weight:600;margin-bottom:6px;">日間照顧</div>
+            <div style="font-size:30px;font-weight:900;color:var(--yellow);letter-spacing:-1px;line-height:1;">83</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:4px;">人・18%</div>
+          </div>
+          <div style="padding:16px;background:#F6FBF6;border:1.5px solid #C8E6C9;border-radius:var(--radius);text-align:center;">
+            <div style="width:12px;height:12px;border-radius:50%;background:var(--green);margin:0 auto 8px;"></div>
+            <div style="font-size:13px;color:var(--text-2);font-weight:600;margin-bottom:6px;">居家服務</div>
+            <div style="font-size:30px;font-weight:900;color:var(--green);letter-spacing:-1px;line-height:1;">224</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:4px;">案・30%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 人力概況 -->
+    <div class="card mb20">
+      <div class="card-title">全集團人力概況</div>
+      <div class="card-sub">今日員工動態</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;">
+        <div style="flex:1;min-width:110px;text-align:center;padding:13px;background:var(--surface2);border-radius:var(--radius-sm);"><div style="font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;">總員工數</div><div style="font-size:30px;font-weight:900;color:var(--teal);">603</div><div style="font-size:11px;color:var(--text-3);">人</div></div>
+        <div style="flex:1;min-width:110px;text-align:center;padding:13px;background:var(--teal-xlight);border-radius:var(--radius-sm);"><div style="font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;">本月新入職</div><div style="font-size:30px;font-weight:900;color:var(--teal);">42</div><div style="font-size:11px;color:var(--teal);">↑ +5%</div></div>
+        <div style="flex:1;min-width:110px;text-align:center;padding:13px;background:var(--red-light);border-radius:var(--radius-sm);"><div style="font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;">本月離職</div><div style="font-size:30px;font-weight:900;color:var(--red);">18</div><div style="font-size:11px;color:var(--red);">率 1.44%</div></div>
+      </div>
+      <div class="alert-banner warn" style="margin-bottom:0;">
+        <div class="alert-icon">⚠️</div>
+        <div><div class="alert-title warn">新北板橋居服所照服員短缺</div><div class="alert-desc">人力比 1:22 已超出法規標準，建議緊急調度支援。</div><span class="alert-cta">→ 立即處理</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 住宿長照 ── -->
+  <div class="section-block" id="sec-res">
+    <div class="section-header">
+      <div style="display:flex;align-items:center;gap:10px;"><span class="section-chip">🏠 住宿長照</span><span style="font-size:var(--font-sm);color:var(--text-2);">台北大安 + 桃園慈愛　今日合計</span></div>
+      <button class="share-btn" onclick="shareSection('sec-res')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>分享</button>
+    </div>
+    <div class="stat-grid g4 mb16">
+      <div class="stat-card accent">
+        <div class="stat-label">今日在院總人數</div>
+        <div class="stat-value teal">236 <span class="stat-unit">位</span></div>
+        <div class="stat-delta up">↑ +3.2% 較上月</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">今日新入住</div>
+        <div class="stat-value">3 <span class="stat-unit">人</span></div>
+        <div class="stat-delta up">↑ 較昨日 +1</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">今日退住人數</div>
+        <div class="stat-value">1 <span class="stat-unit">人</span></div>
+        <div class="stat-delta flat">→ 與昨日持平</div>
+      </div>
+      <div class="stat-card warn">
+        <div class="stat-label">平均空床率</div>
+        <div class="stat-value yellow">12.4 <span class="stat-unit">%</span></div>
+        <div class="stat-delta dn">↓ -1.5% 較上月</div>
+      </div>
+    </div>
+
+    <!-- 住民動態明細 — 簡潔版 -->
+    <div class="card mb16">
+      <div class="card-title">今日住民動態明細</div>
+      <div class="card-sub">兩間長照機構合計數據</div>
+      <div class="metric-chips">
+        <div class="m-chip mc-blue"><div class="m-chip-val" style="color:var(--blue);">11</div><div class="m-chip-label">外診</div></div>
+        <div class="m-chip mc-yellow"><div class="m-chip-val" style="color:var(--yellow);">2</div><div class="m-chip-label">隔離中</div></div>
+        <div class="m-chip mc-cyan"><div class="m-chip-val" style="color:var(--cyan);">5</div><div class="m-chip-label">住院中</div></div>
+        <div class="m-chip mc-teal"><div class="m-chip-val" style="color:var(--teal);">8</div><div class="m-chip-label">請假</div></div>
+        <div class="m-chip mc-red"><div class="m-chip-val" style="color:var(--red);">0</div><div class="m-chip-label">死亡</div></div>
+        <div class="m-chip mc-purple"><div class="m-chip-val" style="color:var(--purple);">12</div><div class="m-chip-label">單管</div></div>
+        <div class="m-chip mc-purple"><div class="m-chip-val" style="color:var(--purple);">5</div><div class="m-chip-label">雙管</div></div>
+        <div class="m-chip mc-red"><div class="m-chip-val" style="color:var(--red);">2</div><div class="m-chip-label">三管</div></div>
+        <div class="m-chip mc-blue"><div class="m-chip-val" style="color:var(--blue);">9</div><div class="m-chip-label">洗腎</div></div>
+        <div class="m-chip mc-green" style="border-color:#C8E6C9;"><div class="m-chip-val" style="color:var(--green);">0</div><div class="m-chip-label">意外事件</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 日照 ── -->
+  <div class="section-block" id="sec-day">
+    <div class="section-header">
+      <div style="display:flex;align-items:center;gap:10px;"><span class="section-chip day">☀️ 日間照顧</span><span style="font-size:var(--font-sm);color:var(--text-2);">高雄幸福 + 台中建德　今日合計</span></div>
+      <button class="share-btn" onclick="shareSection('sec-day')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>分享</button>
+    </div>
+    <div class="stat-grid g3">
+      <div class="stat-card" style="border-color:#FFE0B2;background:#FFFBF5;"><div class="stat-label">總核定人數</div><div class="stat-value yellow">92 <span class="stat-unit">人</span></div><div class="stat-sub">兩間日照合計名額</div></div>
+      <div class="stat-card"><div class="stat-label">今日應到人數</div><div class="stat-value">88 <span class="stat-unit">人</span></div><div class="stat-delta flat">扣除事先請假</div></div>
+      <div class="stat-card warn"><div class="stat-label">今日未到人數</div><div class="stat-value yellow">9 <span class="stat-unit">人</span></div><div class="stat-delta dn">↑ +3 較昨日</div></div>
+    </div>
+  </div>
+
+  <!-- ── 居服 ── -->
+  <div class="section-block" id="sec-home">
+    <div class="section-header">
+      <div style="display:flex;align-items:center;gap:10px;"><span class="section-chip home">🏡 居家服務</span><span style="font-size:var(--font-sm);color:var(--text-2);">新北板橋 + 台南安康　今日合計</span></div>
+      <button class="share-btn" onclick="shareSection('sec-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>分享</button>
+    </div>
+    <div class="stat-grid g3">
+      <div class="stat-card" style="border-color:#C8E6C9;background:#F6FBF6;"><div class="stat-label">今日服務個案數</div><div class="stat-value green">198 <span class="stat-unit">案</span></div><div class="stat-sub">今日排定服務個案</div></div>
+      <div class="stat-card"><div class="stat-label">今日已排班居服員</div><div class="stat-value">62 <span class="stat-unit">人</span></div><div class="stat-delta dn">⚠ 板橋缺工 6 人</div></div>
+      <div class="stat-card"><div class="stat-label">今日服務總時數</div><div class="stat-value">412 <span class="stat-unit">時</span></div><div class="stat-delta up">↑ +3% 較上周</div></div>
+    </div>
+  </div>
+</div><!-- /page-home -->
+
+
+<!-- ════════════════ PAGE: CAPACITY ════════════════ -->
+<div class="page" id="page-capacity">
+  <div class="page-hdr">
+    <div class="page-hdr-row">
+      <div><div class="page-title">產能管理</div><div class="page-sub">監控全集團長照・日照・居服即時資源利用率與服務量</div></div>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="capTab(this,'cap-res')">🏠 住宿長照</button>
+    <button class="tab-btn" onclick="capTab(this,'cap-day')">☀️ 日間照顧</button>
+    <button class="tab-btn" onclick="capTab(this,'cap-home')">🏡 居家服務</button>
+  </div>
+
+  <!-- 住宿長照 -->
+  <div id="cap-res">
+    <div class="stat-grid g4 mb16">
+      <div class="stat-card accent"><div class="stat-label">總床數</div><div class="stat-value teal">280 <span class="stat-unit">床</span></div><div class="stat-sub">兩間機構合計</div></div>
+      <div class="stat-card"><div class="stat-label">佔床數</div><div class="stat-value">236 <span class="stat-unit">床</span></div><div class="stat-delta up">↑ +2 本周入住</div></div>
+      <div class="stat-card"><div class="stat-label">空床數</div><div class="stat-value">44 <span class="stat-unit">床</span></div><div class="stat-sub">可安置床位</div></div>
+      <div class="stat-card warn"><div class="stat-label">平均空床率</div><div class="stat-value yellow">15.7 <span class="stat-unit">%</span></div><div class="stat-delta dn">↓ -1.2% 較上月</div></div>
+    </div>
+    <div class="row-2">
+      <!-- 空床率月趨勢 -->
+      <div class="card">
+        <div class="card-title">各月份空床率趨勢</div>
+        <div class="card-sub">近 6 個月各機構空床率變化</div>
+        <svg class="line-chart-svg" viewBox="0 0 380 80" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="gl-res1" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#009688" stop-opacity=".12"/><stop offset="100%" stop-color="#009688" stop-opacity="0"/></linearGradient>
+            <linearGradient id="gl-res2" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#F57C00" stop-opacity=".12"/><stop offset="100%" stop-color="#F57C00" stop-opacity="0"/></linearGradient>
+          </defs>
+          <line x1="0" y1="20" x2="380" y2="20" stroke="#EEF2F1" stroke-width="1"/>
+          <line x1="0" y1="40" x2="380" y2="40" stroke="#EEF2F1" stroke-width="1"/>
+          <line x1="0" y1="60" x2="380" y2="60" stroke="#EEF2F1" stroke-width="1"/>
+          <!-- 台北大安 -->
+          <path d="M19,28 L95,24 L171,20 L247,22 L323,18 L361,16" fill="none" stroke="#009688" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <!-- 桃園慈愛 -->
+          <path d="M19,52 L95,48 L171,44 L247,50 L323,46 L361,42" fill="none" stroke="#F57C00" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 3"/>
+          <!-- dots 台北 -->
+          <circle cx="19" cy="28" r="3" fill="#009688"/><circle cx="95" cy="24" r="3" fill="#009688"/><circle cx="171" cy="20" r="3" fill="#009688"/><circle cx="247" cy="22" r="3" fill="#009688"/><circle cx="323" cy="18" r="3" fill="#009688"/><circle cx="361" cy="16" r="3" fill="#009688"/>
+          <!-- dots 桃園 -->
+          <circle cx="19" cy="52" r="3" fill="#F57C00"/><circle cx="95" cy="48" r="3" fill="#F57C00"/><circle cx="171" cy="44" r="3" fill="#F57C00"/><circle cx="247" cy="50" r="3" fill="#F57C00"/><circle cx="323" cy="46" r="3" fill="#F57C00"/><circle cx="361" cy="42" r="3" fill="#F57C00"/>
+          <!-- X labels -->
+          <text x="19" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">10月</text>
+          <text x="95" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">11月</text>
+          <text x="171" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">12月</text>
+          <text x="247" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">1月</text>
+          <text x="323" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">2月</text>
+          <text x="361" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">3月</text>
+        </svg>
+        <div class="chart-legend">
+          <div class="chart-legend-item"><div class="cl-dot" style="background:#009688;height:3px;"></div>台北大安</div>
+          <div class="chart-legend-item"><div class="cl-dot" style="background:#F57C00;border-top:3px dashed #F57C00;height:0;"></div>桃園慈愛</div>
+        </div>
+      </div>
+      <!-- 各機構空床率 -->
+      <div class="card">
+        <div class="card-title">各機構空床率比較</div>
+        <div class="card-sub">目前各院區空床狀況</div>
+        <div style="margin-top:6px;">
+          <div style="margin-bottom:14px;"><div class="prog-label"><span>台北大安長照中心</span><span style="font-weight:700;color:var(--teal);">6.1%</span></div><div class="prog-bar"><div class="prog-fill" style="width:6%;"></div></div></div>
+          <div style="margin-bottom:14px;"><div class="prog-label"><span>桃園慈愛養老院</span><span style="font-weight:700;color:var(--yellow);">10.4%</span></div><div class="prog-bar"><div class="prog-fill warn" style="width:10%;"></div></div></div>
+          <div style="padding-top:10px;border-top:1px solid var(--border2);"><div class="prog-label" style="font-weight:700;"><span>集團平均</span><span style="color:var(--yellow)">15.7%</span></div><div class="prog-bar" style="height:10px;"><div class="prog-fill warn" style="width:16%;"></div></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:16px;font-weight:800;margin:18px 0 12px;">各機構詳細資料</div>
+    <div class="row-2">
+      <div class="inst-card">
+        <div class="inst-card-hdr"><div><div class="inst-name">台北大安長照中心</div><div class="inst-id">ID: 1001</div></div><span class="badge badge-ok">穩定</span></div>
+        <div class="inst-metrics-row"><div><div class="inst-m-label">在院人數</div><div class="inst-m-val" style="color:var(--teal)">124</div></div><div><div class="inst-m-label">空床數</div><div class="inst-m-val" style="color:var(--yellow)">8</div></div><div><div class="inst-m-label">佔床率</div><div class="inst-m-val">93.9%</div></div></div>
+        <div class="prog-label"><span>床位使用率</span><span>93.9%</span></div><div class="prog-bar"><div class="prog-fill" style="width:94%"></div></div>
+        <div class="inst-footer"><span>核定床位：132 床</span><span class="inst-link">查看詳情 →</span></div>
+      </div>
+      <div class="inst-card">
+        <div class="inst-card-hdr"><div><div class="inst-name">桃園慈愛養老院</div><div class="inst-id">ID: 5005</div></div><span class="badge badge-ok">穩定</span></div>
+        <div class="inst-metrics-row"><div><div class="inst-m-label">在院人數</div><div class="inst-m-val" style="color:var(--teal)">112</div></div><div><div class="inst-m-label">空床數</div><div class="inst-m-val" style="color:var(--yellow)">36</div></div><div><div class="inst-m-label">佔床率</div><div class="inst-m-val">75.7%</div></div></div>
+        <div class="prog-label"><span>床位使用率</span><span>75.7%</span></div><div class="prog-bar"><div class="prog-fill warn" style="width:76%"></div></div>
+        <div class="inst-footer"><span>核定床位：148 床</span><span class="inst-link">查看詳情 →</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 日間照顧 -->
+  <div id="cap-day" style="display:none;">
+    <div class="stat-grid g4 mb16">
+      <div class="stat-card" style="border-color:#FFE0B2;background:#FFFBF5;"><div class="stat-label">核定總人數</div><div class="stat-value yellow">92 <span class="stat-unit">人</span></div><div class="stat-sub">兩間日照合計</div></div>
+      <div class="stat-card"><div class="stat-label">今日出席</div><div class="stat-value">83 <span class="stat-unit">人</span></div><div class="stat-delta up">↑ 較昨日 +3</div></div>
+      <div class="stat-card warn"><div class="stat-label">今日缺席</div><div class="stat-value yellow">9 <span class="stat-unit">人</span></div><div class="stat-sub">含請假與臨時缺席</div></div>
+      <div class="stat-card accent"><div class="stat-label">出席率</div><div class="stat-value teal">90.3 <span class="stat-unit">%</span></div><div class="stat-delta up">↑ +2.5% 較上月</div></div>
+    </div>
+    <div class="row-2">
+      <!-- 各機構出席率月趨勢 -->
+      <div class="card">
+        <div class="card-title">各機構出席率月趨勢</div>
+        <div class="card-sub">近 6 個月各日照中心出席率變化</div>
+        <svg class="line-chart-svg" viewBox="0 0 380 80" preserveAspectRatio="none">
+          <line x1="0" y1="20" x2="380" y2="20" stroke="#EEF2F1" stroke-width="1"/>
+          <line x1="0" y1="40" x2="380" y2="40" stroke="#EEF2F1" stroke-width="1"/>
+          <line x1="0" y1="60" x2="380" y2="60" stroke="#EEF2F1" stroke-width="1"/>
+          <!-- 高雄幸福 -->
+          <path d="M19,36 L95,30 L171,24 L247,22 L323,18 L361,16" fill="none" stroke="#009688" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <!-- 台中建德 -->
+          <path d="M19,58 L95,54 L171,50 L247,48 L323,44 L361,40" fill="none" stroke="#F57C00" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 3"/>
+          <circle cx="19" cy="36" r="3" fill="#009688"/><circle cx="95" cy="30" r="3" fill="#009688"/><circle cx="171" cy="24" r="3" fill="#009688"/><circle cx="247" cy="22" r="3" fill="#009688"/><circle cx="323" cy="18" r="3" fill="#009688"/><circle cx="361" cy="16" r="3" fill="#009688"/>
+          <circle cx="19" cy="58" r="3" fill="#F57C00"/><circle cx="95" cy="54" r="3" fill="#F57C00"/><circle cx="171" cy="50" r="3" fill="#F57C00"/><circle cx="247" cy="48" r="3" fill="#F57C00"/><circle cx="323" cy="44" r="3" fill="#F57C00"/><circle cx="361" cy="40" r="3" fill="#F57C00"/>
+          <text x="19" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">10月</text>
+          <text x="95" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">11月</text>
+          <text x="171" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">12月</text>
+          <text x="247" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">1月</text>
+          <text x="323" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">2月</text>
+          <text x="361" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">3月</text>
+        </svg>
+        <div class="chart-legend">
+          <div class="chart-legend-item"><div class="cl-dot" style="background:#009688;"></div>高雄幸福</div>
+          <div class="chart-legend-item"><div class="cl-dot" style="background:#F57C00;"></div>台中建德</div>
+        </div>
+      </div>
+      <!-- 當月出席率 -->
+      <div class="card">
+        <div class="card-title">本月各機構出席率</div>
+        <div class="card-sub">3月出席率現況</div>
+        <div style="margin-top:6px;">
+          <div style="margin-bottom:14px;"><div class="prog-label"><span>高雄幸福日照中心</span><span style="font-weight:700;color:var(--teal);">90.0%</span></div><div class="prog-bar"><div class="prog-fill" style="width:90%"></div></div></div>
+          <div style="margin-bottom:14px;"><div class="prog-label"><span>台中建德日照中心</span><span style="font-weight:700;color:var(--yellow);">76.0%</span></div><div class="prog-bar"><div class="prog-fill warn" style="width:76%"></div></div></div>
+          <div style="padding-top:10px;border-top:1px solid var(--border2);"><div class="prog-label" style="font-weight:700;"><span>集團平均</span><span style="color:var(--teal)">90.3%</span></div><div class="prog-bar" style="height:10px;"><div class="prog-fill" style="width:90%"></div></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:16px;font-weight:800;margin:18px 0 12px;">各機構詳細資料</div>
+    <div class="row-2">
+      <div class="inst-card">
+        <div class="inst-card-hdr"><div><div class="inst-name">高雄幸福日照中心</div><div class="inst-id">ID: 3003</div></div><span class="badge badge-ok">正常</span></div>
+        <div class="inst-metrics-row"><div><div class="inst-m-label">核定人數</div><div class="inst-m-val">50</div></div><div><div class="inst-m-label">今日出席</div><div class="inst-m-val" style="color:var(--teal)">45</div></div><div><div class="inst-m-label">出席率</div><div class="inst-m-val" style="color:var(--teal)">90%</div></div></div>
+        <div class="prog-label"><span>出席率</span><span>90%</span></div><div class="prog-bar"><div class="prog-fill" style="width:90%"></div></div>
+        <div class="inst-footer"><span>今日未到：5 人</span><span class="inst-link">查看詳情 →</span></div>
+      </div>
+      <div class="inst-card">
+        <div class="inst-card-hdr"><div><div class="inst-name">台中建德日照中心</div><div class="inst-id">ID: 2002</div></div><span class="badge badge-warn">留意</span></div>
+        <div class="inst-metrics-row"><div><div class="inst-m-label">核定人數</div><div class="inst-m-val">42</div></div><div><div class="inst-m-label">今日出席</div><div class="inst-m-val" style="color:var(--yellow)">38</div></div><div><div class="inst-m-label">出席率</div><div class="inst-m-val" style="color:var(--yellow)">76%</div></div></div>
+        <div class="prog-label"><span>出席率</span><span style="color:var(--yellow)">76%</span></div><div class="prog-bar"><div class="prog-fill warn" style="width:76%"></div></div>
+        <div class="inst-footer"><span>今日未到：4 人</span><span class="inst-link">查看詳情 →</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 居家服務 -->
+  <div id="cap-home" style="display:none;">
+    <div class="stat-grid g3 mb16">
+      <div class="stat-card" style="border-color:#C8E6C9;background:#F6FBF6;"><div class="stat-label">服務案件數</div><div class="stat-value green">224 <span class="stat-unit">案</span></div><div class="stat-sub">兩間居服合計</div></div>
+      <div class="stat-card"><div class="stat-label">月服務時數</div><div class="stat-value">8,200 <span class="stat-unit">時</span></div><div class="stat-delta up">↑ +3.5% 較上月</div></div>
+      <div class="stat-card warn"><div class="stat-label">居服人數</div><div class="stat-value yellow">68 <span class="stat-unit">人</span></div><div class="stat-delta dn">⚠ 板橋站短缺</div></div>
+    </div>
+    <div class="row-2">
+      <!-- 各月份服務人數趨勢（曲線圖） -->
+      <div class="card">
+        <div class="card-title">各機構服務人數月趨勢</div>
+        <div class="card-sub">近 6 個月各居服站服務案件數變化</div>
+        <svg class="line-chart-svg" viewBox="0 0 380 80" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="gl-h1" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#2E7D32" stop-opacity=".12"/><stop offset="100%" stop-color="#2E7D32" stop-opacity="0"/></linearGradient>
+          </defs>
+          <line x1="0" y1="20" x2="380" y2="20" stroke="#EEF2F1" stroke-width="1"/>
+          <line x1="0" y1="40" x2="380" y2="40" stroke="#EEF2F1" stroke-width="1"/>
+          <line x1="0" y1="60" x2="380" y2="60" stroke="#EEF2F1" stroke-width="1"/>
+          <!-- 新北板橋 -->
+          <path d="M19,55 L95,50 L171,44 L247,40 L323,34 L361,28" fill="none" stroke="#2E7D32" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <!-- 台南安康 -->
+          <path d="M19,62 L95,58 L171,56 L247,54 L323,52 L361,50" fill="none" stroke="#009688" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 3"/>
+          <circle cx="19" cy="55" r="3" fill="#2E7D32"/><circle cx="95" cy="50" r="3" fill="#2E7D32"/><circle cx="171" cy="44" r="3" fill="#2E7D32"/><circle cx="247" cy="40" r="3" fill="#2E7D32"/><circle cx="323" cy="34" r="3" fill="#2E7D32"/><circle cx="361" cy="28" r="3" fill="#2E7D32"/>
+          <circle cx="19" cy="62" r="3" fill="#009688"/><circle cx="95" cy="58" r="3" fill="#009688"/><circle cx="171" cy="56" r="3" fill="#009688"/><circle cx="247" cy="54" r="3" fill="#009688"/><circle cx="323" cy="52" r="3" fill="#009688"/><circle cx="361" cy="50" r="3" fill="#009688"/>
+          <text x="19" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">10月</text>
+          <text x="95" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">11月</text>
+          <text x="171" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">12月</text>
+          <text x="247" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">1月</text>
+          <text x="323" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">2月</text>
+          <text x="361" y="78" font-size="9" fill="#8AA3A0" text-anchor="middle">3月</text>
+        </svg>
+        <div class="chart-legend">
+          <div class="chart-legend-item"><div class="cl-dot" style="background:#2E7D32;"></div>新北板橋</div>
+          <div class="chart-legend-item"><div class="cl-dot" style="background:#009688;"></div>台南安康</div>
+        </div>
+      </div>
+      <!-- 本月各機構服務人數比較 -->
+      <div class="card">
+        <div class="card-title">本月各機構服務案件數</div>
+        <div class="card-sub">3月服務個案分佈</div>
+        <div style="margin-top:6px;">
+          <div style="margin-bottom:14px;"><div class="prog-label"><span>新北板橋居家服務所</span><span style="font-weight:700;color:var(--green);">156 案</span></div><div class="prog-bar"><div class="prog-fill" style="width:70%;background:var(--green);"></div></div></div>
+          <div style="margin-bottom:14px;"><div class="prog-label"><span>台南安康樂齡館</span><span style="font-weight:700;color:var(--teal)">68 案</span></div><div class="prog-bar"><div class="prog-fill" style="width:30%;"></div></div></div>
+          <div style="padding-top:10px;border-top:1px solid var(--border2);"><div class="prog-label" style="font-weight:700;"><span>合計</span><span style="color:var(--green)">224 案</span></div><div class="prog-bar" style="height:10px;"><div class="prog-fill" style="width:100%;background:var(--green);"></div></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:16px;font-weight:800;margin:18px 0 12px;">各機構詳細資料</div>
+    <div class="row-2">
+      <div class="inst-card">
+        <div class="inst-card-hdr"><div><div class="inst-name">新北板橋居家服務所</div><div class="inst-id">ID: 4004</div></div><span class="badge badge-danger">人員緊缺</span></div>
+        <div class="inst-metrics-row"><div><div class="inst-m-label">案件數</div><div class="inst-m-val">156</div></div><div><div class="inst-m-label">居服員</div><div class="inst-m-val" style="color:var(--red)">40</div></div><div><div class="inst-m-label">月服時數</div><div class="inst-m-val">5,400</div></div></div>
+        <div class="alert-banner danger" style="margin-top:10px;margin-bottom:0;padding:10px 12px;"><div class="alert-icon" style="font-size:16px;">🚨</div><div><div class="alert-title danger" style="font-size:12px;">人力比 1:22 超出法規</div><div class="alert-desc">建議緊急調度區域支援。</div></div></div>
+        <div class="inst-footer" style="margin-top:10px;"><span>本月新入案：12 ／ 離案：8</span><span class="inst-link">查看詳情 →</span></div>
+      </div>
+      <div class="inst-card">
+        <div class="inst-card-hdr"><div><div class="inst-name">台南安康樂齡館</div><div class="inst-id">ID: 6006</div></div><span class="badge badge-ok">穩定</span></div>
+        <div class="inst-metrics-row"><div><div class="inst-m-label">案件數</div><div class="inst-m-val">68</div></div><div><div class="inst-m-label">居服員</div><div class="inst-m-val" style="color:var(--green)">28</div></div><div><div class="inst-m-label">月服時數</div><div class="inst-m-val">2,800</div></div></div>
+        <div class="inst-footer" style="margin-top:10px;"><span>本月新入案：1 ／ 離案：2</span><span class="inst-link">查看詳情 →</span></div>
+      </div>
+    </div>
+  </div>
+</div><!-- /page-capacity -->
+
+
+<!-- ════════════════ PAGE: HR ════════════════ -->
+<div class="page" id="page-hr">
+  <div class="page-hdr">
+    <div class="page-hdr-row">
+      <div><div class="page-title">人力管理</div><div class="page-sub">全集團人力配置、專業佔比與異動風險總覽</div></div>
+    </div>
+  </div>
+
+  <!-- 集團總覽 -->
+  <div class="section-block">
+    <div style="font-size:16px;font-weight:800;margin-bottom:12px;">集團人力總覽</div>
+    <div class="stat-grid g4 mb16">
+      <div class="stat-card accent"><div class="stat-label">集團員工總數</div><div class="stat-value teal">603 <span class="stat-unit">人</span></div><div class="stat-delta up">↑ +1.3% 較上月 591</div></div>
+      <div class="stat-card"><div class="stat-label">本月新入職</div><div class="stat-value">42 <span class="stat-unit">人</span></div><div class="stat-delta up">↑ +5%</div></div>
+      <div class="stat-card warn"><div class="stat-label">本月離職</div><div class="stat-value yellow">18 <span class="stat-unit">人</span></div><div class="stat-delta flat">離職率 1.44%</div></div>
+      <div class="stat-card"><div class="stat-label">專業執照持有</div><div class="stat-value">410 <span class="stat-unit">人</span></div><div class="stat-delta flat">佔比 68%</div></div>
+    </div>
+
+    <div class="row-2 mb20">
+      <!-- 集團人力佔比 donut -->
+      <div class="card">
+        <div class="card-title">集團各專業人力佔比</div>
+        <div class="card-sub">全集團職類分佈</div>
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+          <svg viewBox="0 0 180 180" style="width:160px;height:160px;flex-shrink:0;">
+            <!-- circumference r=70: ~440 -->
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#EEF2F1" stroke-width="28"/>
+            <!-- 照服員 54.5% → 240 -->
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#009688" stroke-width="28" stroke-dasharray="240 440" stroke-dashoffset="0" transform="rotate(-90 90 90)"/>
+            <!-- 護理師 19.2% → 84 -->
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#2E7D32" stroke-width="28" stroke-dasharray="84 440" stroke-dashoffset="-240" transform="rotate(-90 90 90)"/>
+            <!-- 行政 12% → 53 -->
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#F57C00" stroke-width="28" stroke-dasharray="53 440" stroke-dashoffset="-324" transform="rotate(-90 90 90)"/>
+            <!-- 督導 4% → 18 -->
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#1565C0" stroke-width="28" stroke-dasharray="18 440" stroke-dashoffset="-377" transform="rotate(-90 90 90)"/>
+            <!-- 其他 10.3% → 45 -->
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#6A1B9A" stroke-width="28" stroke-dasharray="45 440" stroke-dashoffset="-395" transform="rotate(-90 90 90)"/>
+            <text x="90" y="84" text-anchor="middle" font-size="18" font-weight="900" fill="#1A2E2B">603</text>
+            <text x="90" y="102" text-anchor="middle" font-size="10" fill="#8AA3A0">總員工</text>
+          </svg>
+          <div style="flex:1;min-width:160px;">
+            <div class="role-row"><div class="role-dot" style="background:#009688;"></div><div class="role-name">照服員</div><div class="role-count">328</div><div class="role-pct">54.5%</div></div>
+            <div class="role-row"><div class="role-dot" style="background:#2E7D32;"></div><div class="role-name">護理師</div><div class="role-count">116</div><div class="role-pct">19.2%</div></div>
+            <div class="role-row"><div class="role-dot" style="background:#F57C00;"></div><div class="role-name">行政/會計</div><div class="role-count">72</div><div class="role-pct">12.0%</div></div>
+            <div class="role-row"><div class="role-dot" style="background:#1565C0;"></div><div class="role-name">督導/主任</div><div class="role-count">24</div><div class="role-pct">4.0%</div></div>
+            <div class="role-row"><div class="role-dot" style="background:#6A1B9A;"></div><div class="role-name">藥師</div><div class="role-count">18</div><div class="role-pct">3.0%</div></div>
+            <div class="role-row"><div class="role-dot" style="background:#C2185B;"></div><div class="role-name">復健/職能治療師</div><div class="role-count">22</div><div class="role-pct">3.6%</div></div>
+            <div class="role-row"><div class="role-dot" style="background:#00838F;"></div><div class="role-name">營養師</div><div class="role-count">12</div><div class="role-pct">2.0%</div></div>
+            <div class="role-row"><div class="role-dot" style="background:#8AA3A0;"></div><div class="role-name">司機/其他</div><div class="role-count">11</div><div class="role-pct">1.7%</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- 風險提示 -->
+      <div class="card">
+        <div class="card-title">人力風險提示</div>
+        <div class="card-sub">AI 預測高風險與即時警示</div>
+        <div class="alert-banner danger mb16">
+          <div class="alert-icon">🚨</div>
+          <div><div class="alert-title danger">新北板橋 照服員嚴重短缺</div><div class="alert-desc">病假 2 名，白班人力比 1:22，已超出法規標準。建議緊急調度區域支援。</div><span class="alert-cta">→ 立即聯繫機構負責人</span></div>
+        </div>
+        <div class="alert-banner warn" style="margin-bottom:0;">
+          <div class="alert-icon">⚠️</div>
+          <div><div class="alert-title warn">員工離職高風險預測（82%）</div><div class="alert-desc">林靜如（板橋居服員）近期連續加班，溝通頻率下降 40%。建議主管主動關心。</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 各機構類型 -->
+  <div class="section-block">
+    <div style="font-size:16px;font-weight:800;margin-bottom:12px;">依機構類型人力分析</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="hrTab(this,'hr-res')">🏠 住宿長照</button>
+      <button class="tab-btn" onclick="hrTab(this,'hr-day')">☀️ 日間照顧</button>
+      <button class="tab-btn" onclick="hrTab(this,'hr-home')">🏡 居家服務</button>
+    </div>
+
+    <!-- 住宿長照 HR -->
+    <div id="hr-res">
+      <div class="stat-grid g3 mb16">
+        <div class="stat-card accent"><div class="stat-label">兩間機構員工合計</div><div class="stat-value teal">236 <span class="stat-unit">人</span></div></div>
+        <div class="stat-card"><div class="stat-label">本月新入職</div><div class="stat-value">9 <span class="stat-unit">人</span></div></div>
+        <div class="stat-card warn"><div class="stat-label">本月離職</div><div class="stat-value yellow">5 <span class="stat-unit">人</span></div><div class="stat-delta flat">離職率 2.1%</div></div>
+      </div>
+      <div class="row-2">
+        <div class="inst-card">
+          <div class="inst-card-hdr"><div><div class="inst-name">台北大安長照中心</div><div class="inst-id">ID: 1001</div></div><span class="badge badge-ok">穩定</span></div>
+          <div class="inst-metrics-row"><div><div class="inst-m-label">總員工</div><div class="inst-m-val">124</div></div><div><div class="inst-m-label">新入職</div><div class="inst-m-val" style="color:var(--teal)">5</div></div><div><div class="inst-m-label">離職</div><div class="inst-m-val" style="color:var(--red)">2</div></div></div>
+          <div style="margin-top:10px;">
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>護理師（25）</span><span>20.2%</span></div><div class="prog-bar"><div class="prog-fill" style="width:20%;background:#2E7D32;"></div></div></div>
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>照服員（70）</span><span>56.5%</span></div><div class="prog-bar"><div class="prog-fill" style="width:57%;"></div></div></div>
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>行政/會計（20）</span><span>16.1%</span></div><div class="prog-bar"><div class="prog-fill" style="width:16%;background:#F57C00;"></div></div></div>
+            <div><div class="prog-label"><span>督導/主任（9）</span><span>7.2%</span></div><div class="prog-bar"><div class="prog-fill" style="width:7%;background:#1565C0;"></div></div></div>
+          </div>
+        </div>
+        <div class="inst-card">
+          <div class="inst-card-hdr"><div><div class="inst-name">桃園慈愛養老院</div><div class="inst-id">ID: 5005</div></div><span class="badge badge-ok">穩定</span></div>
+          <div class="inst-metrics-row"><div><div class="inst-m-label">總員工</div><div class="inst-m-val">112</div></div><div><div class="inst-m-label">新入職</div><div class="inst-m-val" style="color:var(--teal)">4</div></div><div><div class="inst-m-label">離職</div><div class="inst-m-val" style="color:var(--red)">3</div></div></div>
+          <div style="margin-top:10px;">
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>護理師（20）</span><span>17.9%</span></div><div class="prog-bar"><div class="prog-fill" style="width:18%;background:#2E7D32;"></div></div></div>
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>照服員（65）</span><span>58.0%</span></div><div class="prog-bar"><div class="prog-fill" style="width:58%;"></div></div></div>
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>行政/會計（18）</span><span>16.1%</span></div><div class="prog-bar"><div class="prog-fill" style="width:16%;background:#F57C00;"></div></div></div>
+            <div><div class="prog-label"><span>督導/主任（9）</span><span>8.0%</span></div><div class="prog-bar"><div class="prog-fill" style="width:8%;background:#1565C0;"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 日照 HR -->
+    <div id="hr-day" style="display:none;">
+      <div class="stat-grid g3 mb16">
+        <div class="stat-card" style="border-color:#FFE0B2;background:#FFFBF5;"><div class="stat-label">兩間機構員工合計</div><div class="stat-value yellow">143 <span class="stat-unit">人</span></div></div>
+        <div class="stat-card"><div class="stat-label">本月新入職</div><div class="stat-value">5 <span class="stat-unit">人</span></div></div>
+        <div class="stat-card warn"><div class="stat-label">本月離職</div><div class="stat-value yellow">7 <span class="stat-unit">人</span></div><div class="stat-delta dn">留意異動</div></div>
+      </div>
+      <div class="row-2">
+        <div class="inst-card">
+          <div class="inst-card-hdr"><div><div class="inst-name">高雄幸福日照中心</div><div class="inst-id">ID: 3003</div></div><span class="badge badge-ok">穩定</span></div>
+          <div class="inst-metrics-row"><div><div class="inst-m-label">總員工</div><div class="inst-m-val">45</div></div><div><div class="inst-m-label">新入職</div><div class="inst-m-val" style="color:var(--teal)">2</div></div><div><div class="inst-m-label">離職</div><div class="inst-m-val">0</div></div></div>
+          <div style="margin-top:10px;">
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>照服員（25）</span><span>55.6%</span></div><div class="prog-bar"><div class="prog-fill" style="width:56%;"></div></div></div>
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>主任/督導（4）</span><span>8.9%</span></div><div class="prog-bar"><div class="prog-fill" style="width:9%;background:#1565C0;"></div></div></div>
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>職能治療師（3）</span><span>6.7%</span></div><div class="prog-bar"><div class="prog-fill" style="width:7%;background:#C2185B;"></div></div></div>
+            <div><div class="prog-label"><span>司機（2）</span><span>4.4%</span></div><div class="prog-bar"><div class="prog-fill" style="width:4%;background:#8AA3A0;"></div></div></div>
+          </div>
+        </div>
+        <div class="inst-card">
+          <div class="inst-card-hdr"><div><div class="inst-name">台中建德日照中心</div><div class="inst-id">ID: 2002</div></div><span class="badge badge-warn">留意</span></div>
+          <div class="inst-metrics-row"><div><div class="inst-m-label">總員工</div><div class="inst-m-val">98</div></div><div><div class="inst-m-label">新入職</div><div class="inst-m-val" style="color:var(--teal)">3</div></div><div><div class="inst-m-label">離職</div><div class="inst-m-val" style="color:var(--red)">4</div></div></div>
+          <div style="margin-top:10px;">
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>照服員（60）</span><span>61.2%</span></div><div class="prog-bar"><div class="prog-fill" style="width:61%;"></div></div></div>
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>主任/督導（6）</span><span>6.1%</span></div><div class="prog-bar"><div class="prog-fill" style="width:6%;background:#1565C0;"></div></div></div>
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>職能治療師（5）</span><span>5.1%</span></div><div class="prog-bar"><div class="prog-fill" style="width:5%;background:#C2185B;"></div></div></div>
+            <div><div class="prog-label"><span>司機（4）</span><span>4.1%</span></div><div class="prog-bar"><div class="prog-fill" style="width:4%;background:#8AA3A0;"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 居服 HR -->
+    <div id="hr-home" style="display:none;">
+      <div class="stat-grid g3 mb16">
+        <div class="stat-card" style="border-color:#C8E6C9;background:#F6FBF6;"><div class="stat-label">兩間機構員工合計</div><div class="stat-value green">224 <span class="stat-unit">人</span></div></div>
+        <div class="stat-card"><div class="stat-label">本月新入職</div><div class="stat-value">13 <span class="stat-unit">人</span></div><div class="stat-delta up">↑ +5%</div></div>
+        <div class="stat-card warn"><div class="stat-label">本月離職</div><div class="stat-value yellow">10 <span class="stat-unit">人</span></div></div>
+      </div>
+      <div class="row-2">
+        <div class="inst-card">
+          <div class="inst-card-hdr"><div><div class="inst-name">新北板橋居家服務所</div><div class="inst-id">ID: 4004</div></div><span class="badge badge-danger">人員緊缺</span></div>
+          <div class="inst-metrics-row"><div><div class="inst-m-label">總員工</div><div class="inst-m-val">156</div></div><div><div class="inst-m-label">新入職</div><div class="inst-m-val" style="color:var(--teal)">12</div></div><div><div class="inst-m-label">離職</div><div class="inst-m-val" style="color:var(--red)">8</div></div></div>
+          <div style="margin-top:10px;">
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>照服員（100）</span><span style="color:var(--yellow)">64.1%</span></div><div class="prog-bar"><div class="prog-fill warn" style="width:64%;"></div></div></div>
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>行政（28）</span><span>17.9%</span></div><div class="prog-bar"><div class="prog-fill" style="width:18%;background:#F57C00;"></div></div></div>
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>督導（16）</span><span>10.3%</span></div><div class="prog-bar"><div class="prog-fill" style="width:10%;background:#1565C0;"></div></div></div>
+            <div><div class="prog-label"><span>主任（12）</span><span>7.7%</span></div><div class="prog-bar"><div class="prog-fill" style="width:8%;background:#6A1B9A;"></div></div></div>
+          </div>
+        </div>
+        <div class="inst-card">
+          <div class="inst-card-hdr"><div><div class="inst-name">台南安康樂齡館</div><div class="inst-id">ID: 6006</div></div><span class="badge badge-ok">穩定</span></div>
+          <div class="inst-metrics-row"><div><div class="inst-m-label">總員工</div><div class="inst-m-val">68</div></div><div><div class="inst-m-label">新入職</div><div class="inst-m-val" style="color:var(--teal)">1</div></div><div><div class="inst-m-label">離職</div><div class="inst-m-val">2</div></div></div>
+          <div style="margin-top:10px;">
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>照服員（40）</span><span>58.8%</span></div><div class="prog-bar"><div class="prog-fill" style="width:59%;"></div></div></div>
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>行政（13）</span><span>19.1%</span></div><div class="prog-bar"><div class="prog-fill" style="width:19%;background:#F57C00;"></div></div></div>
+            <div style="margin-bottom:7px;"><div class="prog-label"><span>督導（9）</span><span>13.2%</span></div><div class="prog-bar"><div class="prog-fill" style="width:13%;background:#1565C0;"></div></div></div>
+            <div><div class="prog-label"><span>主任（6）</span><span>8.8%</span></div><div class="prog-bar"><div class="prog-fill" style="width:9%;background:#6A1B9A;"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /page-hr -->
+
+</main>
+</div>
+</div>
+
+<script>
+function goPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function capTab(btn,tabId){
+  document.querySelectorAll('#page-capacity .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['cap-res','cap-day','cap-home'].forEach(id=>{
+    var el=document.getElementById(id);
+    if(el) el.style.display=id===tabId?'block':'none';
+  });
+}
+function hrTab(btn,tabId){
+  document.querySelectorAll('#page-hr .tab-bar .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['hr-res','hr-day','hr-home'].forEach(id=>{
+    var el=document.getElementById(id);
+    if(el) el.style.display=id===tabId?'block':'none';
+  });
+}
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+
+/* ── SHARE ── */
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+async function shareSection(sectionId){
+  var el=document.getElementById(sectionId);
+  if(!el){ showToast('找不到區塊'); return; }
+
+  // 截圖前隱藏分享按鈕
+  var btns=el.querySelectorAll('.share-btn');
+  btns.forEach(b=>b.style.visibility='hidden');
+
+  showToast('截圖中…');
+
+  try {
+    var canvas=await html2canvas(el,{
+      scale:2,
+      backgroundColor:'#F7F9FA',
+      useCORS:true,
+      logging:false
+    });
+
+    btns.forEach(b=>b.style.visibility='visible');
+
+    canvas.toBlob(async function(blob){
+      var sectionNames={
+        'sec-res':'住宿長照',
+        'sec-day':'日間照顧',
+        'sec-home':'居家服務'
+      };
+      var name=sectionNames[sectionId]||'資訊';
+      var date=new Date().toLocaleDateString('zh-TW');
+      var file=new File([blob],`Jubo_${name}_${date}.png`,{type:'image/png'});
+
+      // 嘗試 Web Share API（手機支援）
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        try{
+          await navigator.share({
+            files:[file],
+            title:`Jubo 集團總覽｜${name}`,
+            text:`${date} ${name}數據`
+          });
+          showToast('已開啟分享');
+        } catch(e){
+          if(e.name!=='AbortError') fallbackDownload(blob,file.name);
+        }
+      } else {
+        // 桌機 fallback：下載圖片
+        fallbackDownload(blob,file.name);
+      }
+    },'image/png');
+
+  } catch(e){
+    btns.forEach(b=>b.style.visibility='visible');
+    showToast('截圖失敗，請稍後再試');
+  }
+}
+
+function fallbackDownload(blob,filename){
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url; a.download=filename; a.click();
+  URL.revokeObjectURL(url);
+  showToast('圖片已下載，請手動貼到 LINE');
+}
+</script>
+</body>
+</html>
