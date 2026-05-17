@@ -3,1829 +3,608 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>長照集團營運中心 - MVP 版本</title>
+    <title>瑞泰集團營運中心</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+            background: #f5f7fa; color: #2c3e50; line-height: 1.5;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
         .header {
-            background: linear-gradient(135deg, #129AB4 0%, #0d7a8f 100%);
-            color: white;
-            padding: 24px 32px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        /* Tab 導航 */
-        .tabs {
-            display: flex;
-            background: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-            overflow-x: auto;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 16px 20px;
-            text-align: center;
-            cursor: pointer;
-            border: none;
-            background: transparent;
-            font-size: 15px;
-            font-weight: 600;
-            color: #6c757d;
-            transition: all 0.3s;
-            white-space: nowrap;
-            min-width: 120px;
-        }
-
-        .tab:hover {
-            background: #e9ecef;
-        }
-
-        .tab.active {
-            color: #129AB4;
-            background: white;
-            border-bottom: 3px solid #129AB4;
-        }
-
-        /* Tab 內容 */
-        .tab-content {
-            display: none;
-            padding: 24px;
-            animation: fadeIn 0.3s;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 卡片樣式 */
-        .card {
-            background: white;
-            border: 1px solid #e9ecef;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            overflow: hidden;
-        }
-
-        .card-header {
-            background: linear-gradient(to right, #f8f9fa, #e9ecef);
-            padding: 16px 20px;
-            border-bottom: 1px solid #dee2e6;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .card-header h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #212529;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .card-header .toggle {
-            font-size: 20px;
-            color: #6c757d;
-            transition: transform 0.3s;
-        }
-
-        .card-header.collapsed .toggle {
-            transform: rotate(-90deg);
-        }
-
-        .card-body {
-            padding: 20px;
-        }
-
-        .card-body.collapsed {
-            display: none;
-        }
-
-        /* KPI 網格 */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-
-        .kpi-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #129AB4;
-        }
-
-        .kpi-label {
-            font-size: 13px;
-            color: #6c757d;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .kpi-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #212529;
-            margin-bottom: 6px;
-        }
-
-        .kpi-change {
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .kpi-change.up {
-            color: #28a745;
-        }
-
-        .kpi-change.down {
-            color: #FF6B6B;
-        }
-
-        .kpi-change.neutral {
-            color: #6c757d;
-        }
-
-        /* 機構排名卡片 */
-        .rank-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 16px;
-        }
-
-        .rank-card {
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            position: relative;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .rank-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-        }
-
-        .rank-badge {
-            position: absolute;
-            top: -10px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 18px;
-            color: white;
-        }
-
-        .rank-badge.top {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-        }
-
-        .rank-badge.bottom {
-            background: linear-gradient(135deg, #FF6B6B, #dc3545);
-        }
-
-        .rank-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: #212529;
-            margin-bottom: 12px;
-        }
-
-        .rank-score {
-            font-size: 32px;
-            font-weight: 700;
-            color: #129AB4;
-            margin-bottom: 8px;
-        }
-
-        .rank-status {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .rank-status.excellent {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .rank-status.good {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-
-        .rank-status.warning {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .rank-status.critical {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .rank-metrics {
-            font-size: 13px;
-            color: #6c757d;
-            line-height: 1.6;
-        }
-
-        /* 今日動態網格 */
-        .daily-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-        }
-
-        .daily-item {
-            background: #f8f9fa;
-            padding: 12px 16px;
-            border-radius: 8px;
-            border-left: 3px solid #129AB4;
-        }
-
-        .daily-label {
-            font-size: 12px;
-            color: #6c757d;
-            margin-bottom: 6px;
-        }
-
-        .daily-value {
-            font-size: 22px;
-            font-weight: 700;
-            color: #212529;
-            margin-bottom: 4px;
-        }
-
-        .daily-change {
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        /* 財務快照網格 */
-        .finance-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 14px;
-        }
-
-        .finance-item {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            padding: 16px;
-            border-radius: 10px;
-            border: 1px solid #dee2e6;
-            position: relative;
-        }
-
-        .finance-item.highlight {
-            border-left: 4px solid #129AB4;
-            background: linear-gradient(135deg, #e7f6f8 0%, #ffffff 100%);
-        }
-
-        .finance-item.warning {
-            border-left: 4px solid #ffc107;
-            background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
-        }
-
-        .finance-item.critical {
-            border-left: 4px solid #FF6B6B;
-            background: linear-gradient(135deg, #ffe6e6 0%, #ffffff 100%);
-        }
-
-        .finance-label {
-            font-size: 12px;
-            color: #6c757d;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .finance-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #212529;
-            margin-bottom: 4px;
-        }
-
-        .finance-note {
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        /* 趨勢圖容器 */
-        .chart-container {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 12px;
-        }
-
-        .chart-wrapper {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            position: relative;
-            height: 300px;
-        }
-
-        .chart-wrapper canvas {
-            max-height: 260px;
-        }
-
-        .progress-bar-container {
-            background: #e9ecef;
-            height: 30px;
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
-            margin-top: 10px;
-        }
-
-        .progress-bar-fill {
-            background: linear-gradient(90deg, #129AB4 0%, #0d7a8f 100%);
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-            transition: width 1s ease-out;
-        }
-
-        /* 警示區塊 */
-        .alerts {
-            margin-top: 16px;
-        }
-
-        .alert-item {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .alert-item.critical {
-            background: #f8d7da;
-            color: #721c24;
-            border-left: 4px solid #dc3545;
-        }
-
-        .alert-item.warning {
-            background: #fff3cd;
-            color: #856404;
-            border-left: 4px solid #ffc107;
-        }
-
-        .alert-item.good {
-            background: #d4edda;
-            color: #155724;
-            border-left: 4px solid #28a745;
-        }
-
-        .alert-icon {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        /* 核銷管理 */
-        .reimbursement-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 16px;
-        }
-
-        .reimbursement-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #129AB4;
-        }
-
-        .reimbursement-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #212529;
-            margin-bottom: 16px;
-        }
-
-        .reimbursement-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #dee2e6;
-            font-size: 14px;
-        }
-
-        .reimbursement-item:last-child {
-            border-bottom: none;
-        }
-
-        .reimbursement-label {
-            color: #6c757d;
-        }
-
-        .reimbursement-value {
-            font-weight: 600;
-            color: #212529;
-        }
-
-        /* 響應式設計 */
-        @media (max-width: 767px) {
-            body {
-                padding: 10px;
-            }
-
-            .header {
-                padding: 20px 16px;
-            }
-
-            .header h1 {
-                font-size: 22px;
-            }
-
-            .tab-content {
-                padding: 16px;
-            }
-
-            .tab {
-                padding: 12px 16px;
-                font-size: 14px;
-                min-width: 100px;
-            }
-
-            .card-body {
-                padding: 16px;
-            }
-
-            .kpi-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-
-            .daily-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
-
-            .finance-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-
-            .rank-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .daily-item {
-                padding: 10px 12px;
-            }
-
-            .daily-value {
-                font-size: 20px;
-            }
-
-            .finance-value {
-                font-size: 20px;
-            }
-
-            .kpi-value {
-                font-size: 24px;
-            }
+            background: linear-gradient(135deg, #1ca9a9 0%, #16908f 100%);
+            color: white; padding: 14px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .header-content { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 18px; font-weight: 600; }
+        .header-info { font-size: 12px; opacity: 0.95; }
+        .tabs { background: white; border-bottom: 1px solid #e5e7eb; position: sticky; top: 48px; z-index: 99; overflow-x: auto; }
+        .tabs-container { max-width: 1400px; margin: 0 auto; display: flex; }
+        .tab { flex: 1; min-width: 90px; padding: 12px 12px; text-align: center; cursor: pointer; border: none; background: transparent;
+               font-size: 13px; font-weight: 500; color: #6b7280; transition: all 0.2s; border-bottom: 3px solid transparent; }
+        .tab:hover { background: #f9fafb; color: #1ca9a9; }
+        .tab.active { color: #1ca9a9; border-bottom-color: #1ca9a9; background: #f0fdfd; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 12px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card { background: white; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 16px; margin-bottom: 12px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #f0f0f0; }
+        .card-title { font-size: 16px; font-weight: 600; color: #1f2937; }
+        .share-card-btn { padding: 5px 12px; background: #1ca9a9; color: white; border: none; border-radius: 6px; font-size: 12px;
+                         cursor: pointer; transition: all 0.2s; }
+        .share-card-btn:hover { background: #16908f; }
+        .alert-traffic { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+        .traffic-item { padding: 12px 14px; border-radius: 8px; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; border-left: 3px solid; }
+        .traffic-item.red { background: #fef2f2; border-color: #ef4444; }
+        .traffic-item.yellow { background: #fffbeb; border-color: #f59e0b; }
+        .traffic-item.green { background: #f0fdf4; border-color: #10b981; }
+        .traffic-icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
+        .traffic-content { flex: 1; }
+        .traffic-title { font-weight: 600; margin-bottom: 2px; color: #1f2937; font-size: 13px; }
+        .traffic-desc { font-size: 11px; color: #6b7280; line-height: 1.3; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+        .stat-card { background: #f8fafc; padding: 12px; border-radius: 8px; border-left: 3px solid #1ca9a9; }
+        .stat-label { font-size: 12px; color: #64748b; margin-bottom: 4px; }
+        .stat-value { font-size: 20px; font-weight: 700; color: #1f2937; margin-bottom: 2px; }
+        .stat-change { font-size: 11px; font-weight: 500; }
+        .stat-change.positive { color: #10b981; }
+        .stat-change.negative { color: #ef4444; }
+        .quality-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+        .quality-item { padding: 12px; border-radius: 8px; text-align: center; border-left: 3px solid; }
+        .quality-item.red { background: #fef2f2; border-color: #ef4444; }
+        .quality-item.orange { background: #fff7ed; border-color: #f97316; }
+        .quality-item.blue { background: #eff6ff; border-color: #3b82f6; }
+        .quality-item.green { background: #f0fdf4; border-color: #10b981; }
+        .quality-label { font-size: 11px; color: #6b7280; margin-bottom: 3px; }
+        .quality-value { font-size: 18px; font-weight: 700; color: #1f2937; }
+        .quality-note { font-size: 10px; color: #9ca3af; margin-top: 2px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #f8fafc; padding: 8px; text-align: left; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 8px; border-bottom: 1px solid #f1f5f9; }
+        tr:hover { background: #f8fafc; }
+        .status-good { color: #10b981; font-weight: 600; }
+        .status-warning { color: #f97316; font-weight: 600; }
+        .status-danger { color: #ef4444; font-weight: 600; }
+        .chart-container { position: relative; height: 260px; margin-top: 12px; }
+        .chart-small { max-width: 360px; margin: 12px auto; height: 220px; }
+        .section-title { font-size: 14px; color: #4b5563; margin: 16px 0 8px 0; padding-bottom: 6px; border-bottom: 2px solid #f0f0f0; font-weight: 600; }
+        .action-card { padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 10px; border-left: 3px solid; line-height: 1.5; }
+        .action-card.urgent { background: #fef2f2; border-color: #ef4444; }
+        .action-card.important { background: #fff7ed; border-color: #f97316; }
+        .action-card.good { background: #f0fdf4; border-color: #10b981; }
+        .action-title { font-weight: 600; margin-bottom: 4px; color: #1f2937; font-size: 13px; }
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .quality-grid { grid-template-columns: repeat(2, 1fr); }
+            .alert-traffic { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        <div class="header-content">
+            <h1>瑞泰集團營運中心</h1>
+            <div class="header-info">2026年4月 | 3家機構</div>
+        </div>
+    </div>
+    <div class="tabs">
+        <div class="tabs-container">
+            <button class="tab active" onclick="switchTab('overview')">集團總覽</button>
+            <button class="tab" onclick="switchTab('facility1')">幸福老人</button>
+            <button class="tab" onclick="switchTab('facility2')">瑞泰長照</button>
+            <button class="tab" onclick="switchTab('facility3')">瑞泰護理</button>
+        </div>
+    </div>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🏥 長照集團營運中心</h1>
-            <p>MVP 版本 - 5 分鐘快速掌握全局</p>
-        </div>
-
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('overview')">📊 總覽</button>
-            <button class="tab" onclick="switchTab('residential')">🏠 住宿機構</button>
-            <button class="tab" onclick="switchTab('daycare')">☀️ 日照中心</button>
-            <button class="tab" onclick="switchTab('homecare')">🏡 居家服務</button>
-        </div>
-
-        <!-- Tab 1: 總覽 -->
         <div id="overview" class="tab-content active">
-            <!-- 集團 KPI -->
             <div class="card">
-                <div class="card-header" onclick="toggleCard(this)">
-                    <h3>📈 集團 KPI</h3>
-                    <span class="toggle">▼</span>
+                <div class="card-header">
+                    <h2 class="card-title">🚦 營運警報</h2>
+                    <button class="share-card-btn" onclick="shareCard('alert')">📤 分享</button>
                 </div>
-                <div class="card-body">
-                    <div class="kpi-grid">
-                        <div class="kpi-card">
-                            <div class="kpi-label">當月總服務人數</div>
-                            <div class="kpi-value">487 人</div>
-                            <div class="kpi-change up">↑ +23 人 vs 上月</div>
-                        </div>
-                        <div class="kpi-card">
-                            <div class="kpi-label">總員工數</div>
-                            <div class="kpi-value">218 人</div>
-                            <div class="kpi-change up">↑ +5 人 vs 上月</div>
-                        </div>
-                        <div class="kpi-card">
-                            <div class="kpi-label">新入職</div>
-                            <div class="kpi-value">12 人</div>
-                            <div class="kpi-change neutral">本月</div>
-                        </div>
-                        <div class="kpi-card">
-                            <div class="kpi-label">離職人數</div>
-                            <div class="kpi-value">7 人</div>
-                            <div class="kpi-change down">需關注</div>
-                        </div>
-                    </div>
+                <div class="alert-traffic">
+                    <div class="traffic-item red"><div class="traffic-icon">🔴</div><div class="traffic-content"><div class="traffic-title">瑞泰護理：98%庫存缺貨</div><div class="traffic-desc">216/221項需補貨</div></div></div>
+                    <div class="traffic-item red"><div class="traffic-icon">🔴</div><div class="traffic-content"><div class="traffic-title">瑞泰護理：收款率0%</div><div class="traffic-desc">$4.73M全未收</div></div></div>
+                    <div class="traffic-item red"><div class="traffic-icon">🔴</div><div class="traffic-content"><div class="traffic-title">意外事件結案率17%</div><div class="traffic-desc">30件處理中</div></div></div>
+                    <div class="traffic-item yellow"><div class="traffic-icon">🟡</div><div class="traffic-content"><div class="traffic-title">瑞泰長照離職率17.4%</div><div class="traffic-desc">需關注人員穩定</div></div></div>
+                    <div class="traffic-item green"><div class="traffic-icon">🟢</div><div class="traffic-content"><div class="traffic-title">空床率0.7%優秀</div><div class="traffic-desc">接近滿載</div></div></div>
+                    <div class="traffic-item green"><div class="traffic-icon">🟢</div><div class="traffic-content"><div class="traffic-title">幸福老人收款率100%</div><div class="traffic-desc">財務管理良好</div></div></div>
                 </div>
             </div>
-
-            <!-- 機構健康度排名 -->
+            
             <div class="card">
-                <div class="card-header" onclick="toggleCard(this)">
-                    <h3>🏆 機構健康度排名 (Top 3 + Bottom 2)</h3>
-                    <span class="toggle">▼</span>
+                <div class="card-header">
+                    <h2 class="card-title">💰 財務儀表板</h2>
+                    <button class="share-card-btn" onclick="shareCard('finance')">📤 分享</button>
                 </div>
-                <div class="card-body">
-                    <div class="rank-grid">
-                        <!-- Top 1 -->
-                        <div class="rank-card">
-                            <div class="rank-badge top">1</div>
-                            <div class="rank-name">樂活日照中心</div>
-                            <div class="rank-score">92 分</div>
-                            <div class="rank-status excellent">優秀</div>
-                            <div class="rank-metrics">
-                                ✓ 出席率 86.5%<br>
-                                ✓ 營收成長 +12.3%<br>
-                                ✓ 收款率 94.2%
-                            </div>
-                        </div>
-
-                        <!-- Top 2 -->
-                        <div class="rank-card">
-                            <div class="rank-badge top">2</div>
-                            <div class="rank-name">博愛護理之家</div>
-                            <div class="rank-score">88 分</div>
-                            <div class="rank-status excellent">優秀</div>
-                            <div class="rank-metrics">
-                                ✓ 占床率 96.8%<br>
-                                ✓ 營收成長 +15.2%<br>
-                                ⚠️ 成本率 64.5%
-                            </div>
-                        </div>
-
-                        <!-- Top 3 -->
-                        <div class="rank-card">
-                            <div class="rank-badge top">3</div>
-                            <div class="rank-name">悠活居家服務</div>
-                            <div class="rank-score">85 分</div>
-                            <div class="rank-status good">良好</div>
-                            <div class="rank-metrics">
-                                ✓ 服務時數 +8%<br>
-                                ✓ 補助使用率 89.9%<br>
-                                ⚠️ 時數單價 -1.5%
-                            </div>
-                        </div>
-
-                        <!-- Bottom 2 -->
-                        <div class="rank-card">
-                            <div class="rank-badge bottom">5</div>
-                            <div class="rank-name">銀髮住宿機構</div>
-                            <div class="rank-score">72 分</div>
-                            <div class="rank-status warning">需改善</div>
-                            <div class="rank-metrics">
-                                ⚠️ 空床率 8.2%<br>
-                                ⚠️ 營收 -2.5%<br>
-                                🔴 未收款 $38萬
-                            </div>
-                        </div>
-
-                        <!-- Bottom 1 -->
-                        <div class="rank-card">
-                            <div class="rank-badge bottom">6</div>
-                            <div class="rank-name">博愛日照中心</div>
-                            <div class="rank-score">68 分</div>
-                            <div class="rank-status critical">需關注</div>
-                            <div class="rank-metrics">
-                                🔴 出席率 78.5%<br>
-                                🔴 人事成本率 68.2%<br>
-                                ⚠️ 未收款 $9萬
-                            </div>
-                        </div>
+                <div id="finance">
+                    <div class="stats-grid">
+                        <div class="stat-card"><div class="stat-label">集團本月營收</div><div class="stat-value">$10.53M</div><div class="stat-change negative">↓ vs上月 -8.0%</div></div>
+                        <div class="stat-card"><div class="stat-label">平均收款率</div><div class="stat-value">62.1%</div><div class="stat-change negative">⚠️ 瑞泰護理影響</div></div>
+                        <div class="stat-card"><div class="stat-label">平均空床率</div><div class="stat-value">0.7%</div><div class="stat-change positive">✅ 優秀</div></div>
                     </div>
+                    <h3 class="section-title">營收結構（4月）</h3>
+                    <div class="chart-small"><canvas id="revenueChart"></canvas></div>
                 </div>
             </div>
-
-            <!-- 收款警示 -->
+            
             <div class="card">
-                <div class="card-header" onclick="toggleCard(this)">
-                    <h3>💰 收款警示</h3>
-                    <span class="toggle">▼</span>
-                </div>
-                <div class="card-body">
-                    <div class="alerts">
-                        <div class="alert-item critical">
-                            <span class="alert-icon">🔴</span>
-                            <div>
-                                <strong>長齡住宿機構</strong> - 未收款 $45萬 (佔營收 15.8%)
-                            </div>
-                        </div>
-                        <div class="alert-item warning">
-                            <span class="alert-icon">🟡</span>
-                            <div>
-                                <strong>銀髮住宿機構</strong> - 未收款 $38萬 (佔營收 18.5%)
-                            </div>
-                        </div>
-                        <div class="alert-item warning">
-                            <span class="alert-icon">🟡</span>
-                            <div>
-                                <strong>悠活居家服務</strong> - 未收款 $23萬 (佔營收 12.4%)
-                            </div>
-                        </div>
-                    </div>
+                <div class="card-header"><h2 class="card-title">🏆 機構表現排行</h2><button class="share-card-btn" onclick="shareCard('rank')">📤 分享</button></div>
+                <div id="rank">
+                    <table>
+                        <thead><tr><th>排名</th><th>機構</th><th>營收</th><th>vs上月</th><th>收款率</th><th>空床率</th></tr></thead>
+                        <tbody>
+                            <tr><td>1</td><td>瑞泰護理</td><td>$4.73M</td><td class="status-danger">-10.1%</td><td class="status-danger">0% 🔴</td><td class="status-good">0.0%</td></tr>
+                            <tr><td>2</td><td>瑞泰長照</td><td>$3.06M</td><td class="status-warning">-5.0%</td><td class="status-warning">86.3%</td><td class="status-good">1.1%</td></tr>
+                            <tr><td>3</td><td>幸福老人</td><td>$2.74M</td><td class="status-danger">-9.0%</td><td class="status-good">100%</td><td class="status-good">1.1%</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-
-        <!-- Tab 2: 住宿機構 -->
-        <div id="residential" class="tab-content">
-            <!-- 長齡住宿機構 -->
+            
             <div class="card">
-                <div class="card-header" onclick="toggleCard(this)">
-                    <h3>🏢 長齡住宿機構</h3>
-                    <span class="toggle">▼</span>
-                </div>
-                <div class="card-body">
-                    <!-- 今日動態 -->
-                    <h4 style="margin-bottom: 16px; font-size: 16px; color: #212529;">📅 今日動態</h4>
-                    <div class="daily-grid">
-                        <div class="daily-item">
-                            <div class="daily-label">總人數</div>
-                            <div class="daily-value">120 人</div>
-                            <div class="daily-change up">↑ +2 vs 昨天</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">在院人數</div>
-                            <div class="daily-value">114 人</div>
-                            <div class="daily-change neutral">持平</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">新入院</div>
-                            <div class="daily-value">3 人</div>
-                            <div class="daily-change up">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">退住</div>
-                            <div class="daily-value">1 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">隔離中</div>
-                            <div class="daily-value">2 人</div>
-                            <div class="daily-change neutral">持平</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">外診</div>
-                            <div class="daily-value">3 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">住院</div>
-                            <div class="daily-value">1 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">請假</div>
-                            <div class="daily-value">2 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
+                <div class="card-header"><h2 class="card-title">👥 人力狀況</h2><button class="share-card-btn" onclick="shareCard('hr')">📤 分享</button></div>
+                <div id="hr">
+                    <div class="stats-grid">
+                        <div class="stat-card"><div class="stat-label">集團員工</div><div class="stat-value">136 人</div><div class="stat-change">在職員工</div></div>
+                        <div class="stat-card"><div class="stat-label">集團住民</div><div class="stat-value">269 人</div><div class="stat-change">3家機構</div></div>
+                        <div class="stat-card"><div class="stat-label">平均照護比</div><div class="stat-value">1:1.98</div><div class="stat-change positive">✅ 合理</div></div>
+                        <div class="stat-card"><div class="stat-label">平均離職率</div><div class="stat-value">9.5%</div><div class="stat-change">(13人)</div></div>
                     </div>
-
-                    <!-- 空床率趨勢 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">📉 空床率趨勢 (近 13 個月)</h4>
-                    <div class="chart-container">
-                        <div class="chart-wrapper">
-                            <canvas id="vacancyChartChangling"></canvas>
-                        </div>
-                        <div style="margin-top: 12px; text-align: center; font-size: 13px; color: #6c757d;">
-                            ✓ 當前空床率 5.1%，接近目標值
-                        </div>
-                    </div>
-
-                    <!-- 本月財務快照 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">💰 本月財務快照</h4>
-                    <div class="finance-grid">
-                        <div class="finance-item highlight">
-                            <div class="finance-label">營收</div>
-                            <div class="finance-value">$285萬</div>
-                            <div class="finance-note up">↑ +18.0% YoY</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">已收款</div>
-                            <div class="finance-value">$240萬</div>
-                            <div class="finance-note neutral">(84.2%)</div>
-                        </div>
-                        <div class="finance-item warning">
-                            <div class="finance-label">未收款</div>
-                            <div class="finance-value">$45萬</div>
-                            <div class="finance-note warning">⚠️ 需追蹤</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">占床率</div>
-                            <div class="finance-value">94.9%</div>
-                            <div class="finance-note up">✓ 優良</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">人事成本</div>
-                            <div class="finance-value">$178萬</div>
-                            <div class="finance-note up">↑ +12.2%</div>
-                        </div>
-                        <div class="finance-item critical">
-                            <div class="finance-label">成本率</div>
-                            <div class="finance-value">62.5%</div>
-                            <div class="finance-note critical">🔴 超標</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">人均產值</div>
-                            <div class="finance-value">1.60 倍</div>
-                            <div class="finance-note up">✓ 效率提升</div>
-                        </div>
-                    </div>
-
-                    <!-- 營收趨勢 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">📈 營收趨勢 (近 13 個月)</h4>
-                    <div class="chart-container">
-                        <div class="chart-wrapper">
-                            <canvas id="revenueChartChangling"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- 需關注事項 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">⚠️ 需關注事項</h4>
-                    <div class="alerts">
-                        <div class="alert-item critical">
-                            <span class="alert-icon">🔴</span>
-                            <div><strong>人事成本率 62.5%</strong> - 超過 60% 標準，需檢視人力配置</div>
-                        </div>
-                        <div class="alert-item warning">
-                            <span class="alert-icon">🟡</span>
-                            <div><strong>未收款 $45萬</strong> - 佔營收 15.8%，需加強催收</div>
-                        </div>
-                        <div class="alert-item good">
-                            <span class="alert-icon">✓</span>
-                            <div><strong>營收成長健康</strong> - YoY +18.0%，表現優異</div>
-                        </div>
-                    </div>
+                    <h3 class="section-title">各機構人力比較</h3>
+                    <table>
+                        <thead><tr><th>機構</th><th>員工</th><th>住民</th><th>照護比</th><th>離職率</th></tr></thead>
+                        <tbody>
+                            <tr><td>幸福老人</td><td>46人</td><td>89人</td><td>1:1.93</td><td class="status-good">6.5%</td></tr>
+                            <tr><td>瑞泰長照</td><td>46人</td><td>89人</td><td>1:1.93</td><td class="status-danger">17.4% 🔴</td></tr>
+                            <tr><td>瑞泰護理</td><td>44人</td><td>91人</td><td>1:2.07</td><td class="status-good">4.5%</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-            <!-- 博愛護理之家 -->
+            
             <div class="card">
-                <div class="card-header collapsed" onclick="toggleCard(this)">
-                    <h3>🏥 博愛護理之家</h3>
-                    <span class="toggle">▼</span>
-                </div>
-                <div class="card-body collapsed">
-                    <!-- 今日動態 -->
-                    <h4 style="margin-bottom: 16px; font-size: 16px; color: #212529;">📅 今日動態</h4>
-                    <div class="daily-grid">
-                        <div class="daily-item">
-                            <div class="daily-label">總人數</div>
-                            <div class="daily-value">95 人</div>
-                            <div class="daily-change up">↑ +1 vs 昨天</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">在院人數</div>
-                            <div class="daily-value">92 人</div>
-                            <div class="daily-change neutral">持平</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">新入院</div>
-                            <div class="daily-value">2 人</div>
-                            <div class="daily-change up">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">退住</div>
-                            <div class="daily-value">1 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">隔離中</div>
-                            <div class="daily-value">0 人</div>
-                            <div class="daily-change neutral">持平</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">外診</div>
-                            <div class="daily-value">2 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">住院</div>
-                            <div class="daily-value">1 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">請假</div>
-                            <div class="daily-value">0 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
+                <div class="card-header"><h2 class="card-title">📋 照護品質</h2><button class="share-card-btn" onclick="shareCard('quality')">📤 分享</button></div>
+                <div id="quality">
+                    <div class="quality-grid">
+                        <div class="quality-item green"><div class="quality-label">跌倒事件</div><div class="quality-value">0 件</div><div class="quality-note">✅ 全集團</div></div>
+                        <div class="quality-item green"><div class="quality-label">壓傷事件</div><div class="quality-value">0 件</div><div class="quality-note">✅ 全集團</div></div>
+                        <div class="quality-item blue"><div class="quality-label">感染事件</div><div class="quality-value">14 件</div><div class="quality-note">幸福老人</div></div>
+                        <div class="quality-item orange"><div class="quality-label">非計畫性住院</div><div class="quality-value">36 件</div><div class="quality-note">需關注</div></div>
                     </div>
-
-                    <!-- 本月財務快照 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">💰 本月財務快照</h4>
-                    <div class="finance-grid">
-                        <div class="finance-item highlight">
-                            <div class="finance-label">營收</div>
-                            <div class="finance-value">$320萬</div>
-                            <div class="finance-note up">↑ +15.2% YoY</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">已收款</div>
-                            <div class="finance-value">$288萬</div>
-                            <div class="finance-note neutral">(90.0%)</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">未收款</div>
-                            <div class="finance-value">$32萬</div>
-                            <div class="finance-note neutral">正常範圍</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">占床率</div>
-                            <div class="finance-value">96.8%</div>
-                            <div class="finance-note up">✓ 優秀</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">人事成本</div>
-                            <div class="finance-value">$206萬</div>
-                            <div class="finance-note up">↑ +10.5%</div>
-                        </div>
-                        <div class="finance-item warning">
-                            <div class="finance-label">成本率</div>
-                            <div class="finance-value">64.5%</div>
-                            <div class="finance-note warning">🟡 偏高</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">人均產值</div>
-                            <div class="finance-value">1.55 倍</div>
-                            <div class="finance-note neutral">穩定</div>
-                        </div>
-                    </div>
-
-                    <!-- 空床率趨勢 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">📉 空床率趨勢 (近 13 個月)</h4>
-                    <div class="chart-container">
-                        <div class="chart-wrapper">
-                            <canvas id="vacancyChartBoai"></canvas>
-                        </div>
-                        <div style="margin-top: 12px; text-align: center; font-size: 13px; color: #6c757d;">
-                            ✓ 當前空床率 3.2%，表現優秀
-                        </div>
-                    </div>
-
-                    <!-- 營收趨勢 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">📈 營收趨勢 (近 13 個月)</h4>
-                    <div class="chart-container">
-                        <div class="chart-wrapper">
-                            <canvas id="revenueChartBoai"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- 需關注事項 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">⚠️ 需關注事項</h4>
-                    <div class="alerts">
-                        <div class="alert-item warning">
-                            <span class="alert-icon">🟡</span>
-                            <div><strong>人事成本率 64.5%</strong> - 接近警戒線，需持續監控</div>
-                        </div>
-                        <div class="alert-item good">
-                            <span class="alert-icon">✓</span>
-                            <div><strong>占床率優秀</strong> - 96.8%，遠超目標值</div>
-                        </div>
-                        <div class="alert-item good">
-                            <span class="alert-icon">✓</span>
-                            <div><strong>營收穩定成長</strong> - YoY +15.2%</div>
-                        </div>
-                    </div>
+                    <h3 class="section-title">各機構比較</h3>
+                    <table>
+                        <thead><tr><th>機構</th><th>跌倒</th><th>壓傷</th><th>感染</th><th>住院</th></tr></thead>
+                        <tbody>
+                            <tr><td>幸福老人</td><td>0 ✅</td><td>0 ✅</td><td>14</td><td>32</td></tr>
+                            <tr><td>瑞泰長照</td><td>0 ✅</td><td>0 ✅</td><td>0 ✅</td><td>4 ✅</td></tr>
+                            <tr><td>瑞泰護理</td><td>0 ✅</td><td>0 ✅</td><td>0 ✅</td><td>0 ✅</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-            <!-- 銀髮住宿機構 -->
+            
             <div class="card">
-                <div class="card-header collapsed" onclick="toggleCard(this)">
-                    <h3>🏘️ 銀髮住宿機構</h3>
-                    <span class="toggle">▼</span>
+                <div class="card-header"><h2 class="card-title">⚠️ 意外事件處理</h2><button class="share-card-btn" onclick="shareCard('accident')">📤 分享</button></div>
+                <div id="accident">
+                    <div class="quality-grid">
+                        <div class="quality-item orange"><div class="quality-label">總事件數</div><div class="quality-value">36 件</div><div class="quality-note">年度累計</div></div>
+                        <div class="quality-item red"><div class="quality-label">結案率</div><div class="quality-value">17% 🔴</div><div class="quality-note">僅6件結案</div></div>
+                        <div class="quality-item red"><div class="quality-label">處理中</div><div class="quality-value">30 件</div><div class="quality-note">需加速</div></div>
+                        <div class="quality-item blue"><div class="quality-label">事件類型</div><div class="quality-value">跌倒 34</div><div class="quality-note">其他 2</div></div>
+                    </div>
+                    <h3 class="section-title">各機構比較</h3>
+                    <table>
+                        <thead><tr><th>機構</th><th>總事件</th><th>已結案</th><th>處理中</th><th>結案率</th></tr></thead>
+                        <tbody>
+                            <tr><td>瑞泰護理</td><td>17件</td><td>4件</td><td>13件</td><td class="status-warning">23.5%</td></tr>
+                            <tr><td>瑞泰長照</td><td>11件</td><td>1件</td><td>10件</td><td class="status-danger">9.1% 🔴</td></tr>
+                            <tr><td>幸福老人</td><td>8件</td><td>1件</td><td>7件</td><td class="status-danger">12.5% 🔴</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="card-body collapsed">
-                    <!-- 今日動態 -->
-                    <h4 style="margin-bottom: 16px; font-size: 16px; color: #212529;">📅 今日動態</h4>
-                    <div class="daily-grid">
-                        <div class="daily-item">
-                            <div class="daily-label">總人數</div>
-                            <div class="daily-value">88 人</div>
-                            <div class="daily-change down">↓ -2 vs 昨天</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">在院人數</div>
-                            <div class="daily-value">81 人</div>
-                            <div class="daily-change down">↓ -1 vs 昨天</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">新入院</div>
-                            <div class="daily-value">1 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">退住</div>
-                            <div class="daily-value">3 人</div>
-                            <div class="daily-change down">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">隔離中</div>
-                            <div class="daily-value">1 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">外診</div>
-                            <div class="daily-value">4 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">住院</div>
-                            <div class="daily-value">2 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">請假</div>
-                            <div class="daily-value">0 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header"><h2 class="card-title">📦 倉儲管理</h2><button class="share-card-btn" onclick="shareCard('inventory')">📤 分享</button></div>
+                <div id="inventory">
+                    <div class="quality-grid">
+                        <div class="quality-item blue"><div class="quality-label">庫存總金額</div><div class="quality-value">$380K</div><div class="quality-note">3家機構</div></div>
+                        <div class="quality-item blue"><div class="quality-label">總成本</div><div class="quality-value">$74K</div><div class="quality-note">本月累計</div></div>
+                        <div class="quality-item orange"><div class="quality-label">品項總數</div><div class="quality-value">626 項</div><div class="quality-note">13個類別</div></div>
+                        <div class="quality-item red"><div class="quality-label">低庫存警報</div><div class="quality-value">238 項</div><div class="quality-note">🔴 急需補貨</div></div>
                     </div>
-
-                    <!-- 本月財務快照 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">💰 本月財務快照</h4>
-                    <div class="finance-grid">
-                        <div class="finance-item warning">
-                            <div class="finance-label">營收</div>
-                            <div class="finance-value">$205萬</div>
-                            <div class="finance-note down">↓ -2.5% YoY</div>
+                    <h3 class="section-title">各機構低庫存比較</h3>
+                    <div style="margin: 12px 0;">
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="font-size: 13px; font-weight: 500;">瑞泰護理</span>
+                                <span style="font-size: 13px; color: #ef4444; font-weight: 600;">216項 (97.7%) 🔴</span>
+                            </div>
+                            <div style="background: #f1f5f9; height: 24px; border-radius: 6px; overflow: hidden;">
+                                <div style="background: #ef4444; height: 100%; width: 97.7%;"></div>
+                            </div>
                         </div>
-                        <div class="finance-item">
-                            <div class="finance-label">已收款</div>
-                            <div class="finance-value">$167萬</div>
-                            <div class="finance-note neutral">(81.5%)</div>
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="font-size: 13px; font-weight: 500;">幸福老人</span>
+                                <span style="font-size: 13px; color: #f97316; font-weight: 600;">16項 (10.1%)</span>
+                            </div>
+                            <div style="background: #f1f5f9; height: 24px; border-radius: 6px; overflow: hidden;">
+                                <div style="background: #f97316; height: 100%; width: 10.1%;"></div>
+                            </div>
                         </div>
-                        <div class="finance-item critical">
-                            <div class="finance-label">未收款</div>
-                            <div class="finance-value">$38萬</div>
-                            <div class="finance-note critical">🔴 高</div>
-                        </div>
-                        <div class="finance-item warning">
-                            <div class="finance-label">占床率</div>
-                            <div class="finance-value">91.8%</div>
-                            <div class="finance-note warning">🟡 待提升</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">人事成本</div>
-                            <div class="finance-value">$128萬</div>
-                            <div class="finance-note up">↑ +8.5%</div>
-                        </div>
-                        <div class="finance-item critical">
-                            <div class="finance-label">成本率</div>
-                            <div class="finance-value">62.4%</div>
-                            <div class="finance-note critical">🔴 超標</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">人均產值</div>
-                            <div class="finance-value">1.60 倍</div>
-                            <div class="finance-note neutral">持平</div>
-                        </div>
-                    </div>
-
-                    <!-- 空床率趨勢 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">📉 空床率趨勢 (近 13 個月)</h4>
-                    <div class="chart-container">
-                        <div class="chart-wrapper">
-                            <canvas id="vacancyChartYinfa"></canvas>
-                        </div>
-                        <div style="margin-top: 12px; text-align: center; font-size: 13px; color: #FF6B6B;">
-                            ⚠️ 當前空床率 8.2%，需加強招生
-                        </div>
-                    </div>
-
-                    <!-- 營收趨勢 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">📈 營收趨勢 (近 13 個月)</h4>
-                    <div class="chart-container">
-                        <div class="chart-wrapper">
-                            <canvas id="revenueChartYinfa"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- 需關注事項 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">⚠️ 需關注事項</h4>
-                    <div class="alerts">
-                        <div class="alert-item critical">
-                            <span class="alert-icon">🔴</span>
-                            <div><strong>空床率 8.2%</strong> - 超過目標，需強化行銷招生</div>
-                        </div>
-                        <div class="alert-item critical">
-                            <span class="alert-icon">🔴</span>
-                            <div><strong>未收款 $38萬</strong> - 佔營收 18.5%，應收帳款過高</div>
-                        </div>
-                        <div class="alert-item warning">
-                            <span class="alert-icon">🟡</span>
-                            <div><strong>營收衰退</strong> - YoY -2.5%，需檢討策略</div>
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="font-size: 13px; font-weight: 500;">瑞泰長照</span>
+                                <span style="font-size: 13px; color: #10b981; font-weight: 600;">6項 (2.4%) ✅</span>
+                            </div>
+                            <div style="background: #f1f5f9; height: 24px; border-radius: 6px; overflow: hidden;">
+                                <div style="background: #10b981; height: 100%; width: 2.4%;"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Tab 3: 日照中心 -->
-        <div id="daycare" class="tab-content">
-            <!-- 博愛日照中心 -->
+        <div id="facility1" class="tab-content">
             <div class="card">
-                <div class="card-header" onclick="toggleCard(this)">
-                    <h3>☀️ 博愛日照中心</h3>
-                    <span class="toggle">▼</span>
+                <div class="card-header"><h2 class="card-title">🏨 幸福老人長期照顧中心</h2></div>
+                
+                <h3 class="section-title">💰 財務數據</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">本月營收</div><div class="stat-value">$2.74M</div><div class="stat-change negative">↓ vs上月 -9.0%</div></div>
+                    <div class="stat-card"><div class="stat-label">收款率</div><div class="stat-value status-good">100.0%</div><div class="stat-change positive">✅ 無未收款</div></div>
+                    <div class="stat-card"><div class="stat-label">未收款</div><div class="stat-value">$0K</div><div class="stat-change">0筆</div></div>
                 </div>
-                <div class="card-body">
-                    <!-- 今日動態 -->
-                    <h4 style="margin-bottom: 16px; font-size: 16px; color: #212529;">📅 今日動態</h4>
-                    <div class="daily-grid">
-                        <div class="daily-item">
-                            <div class="daily-label">核定收案數</div>
-                            <div class="daily-value">50 人</div>
-                            <div class="daily-change neutral">核定</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">實際收案數</div>
-                            <div class="daily-value">46 人</div>
-                            <div class="daily-change neutral">持平</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">應到人數</div>
-                            <div class="daily-value">42 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">未到人數</div>
-                            <div class="daily-value">4 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">請假</div>
-                            <div class="daily-value">4 人</div>
-                            <div class="daily-change down">↓ -1 vs 昨天</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">出席率</div>
-                            <div class="daily-value">78.5%</div>
-                            <div class="daily-change down">🟡 待提升</div>
-                        </div>
-                    </div>
-
-                    <!-- 出席率趨勢 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">📊 出席率趨勢 (近 6 個月)</h4>
-                    <div class="chart-container">
-                        <div class="chart-wrapper">
-                            <canvas id="attendanceChartBoai"></canvas>
-                        </div>
-                        <div style="margin-top: 12px; text-align: center; font-size: 13px; color: #856404;">
-                            ⚠️ 當前出席率 78.5%，低於目標值
-                        </div>
-                    </div>
-
-                    <!-- 本月財務快照 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">💰 本月財務快照</h4>
-                    <div class="finance-grid">
-                        <div class="finance-item highlight">
-                            <div class="finance-label">營收</div>
-                            <div class="finance-value">$72萬</div>
-                            <div class="finance-note up">↑ +5.2% YoY</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">已收款</div>
-                            <div class="finance-value">$63萬</div>
-                            <div class="finance-note neutral">(87.5%)</div>
-                        </div>
-                        <div class="finance-item warning">
-                            <div class="finance-label">未收款</div>
-                            <div class="finance-value">$9萬</div>
-                            <div class="finance-note warning">⚠️ 需追蹤</div>
-                        </div>
-                        <div class="finance-item warning">
-                            <div class="finance-label">平均出席率</div>
-                            <div class="finance-value">78.5%</div>
-                            <div class="finance-note warning">🟡 待提升</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">平均日出席</div>
-                            <div class="daily-value">33 人</div>
-                            <div class="finance-note neutral">穩定</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">人事成本</div>
-                            <div class="finance-value">$49萬</div>
-                            <div class="finance-note up">↑ +4.2%</div>
-                        </div>
-                        <div class="finance-item critical">
-                            <div class="finance-label">成本率</div>
-                            <div class="finance-value">68.2%</div>
-                            <div class="finance-note critical">🔴 過高</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">人均產值</div>
-                            <div class="finance-value">1.47 倍</div>
-                            <div class="finance-note down">↓ -3.2%</div>
-                        </div>
-                    </div>
-
-                    <!-- 營收趨勢 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">📈 營收趨勢 (近 6 個月)</h4>
-                    <div class="chart-container">
-                        <div class="chart-wrapper">
-                            <canvas id="revenueChartBoaiDaycare"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- 需關注事項 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">⚠️ 需關注事項</h4>
-                    <div class="alerts">
-                        <div class="alert-item critical">
-                            <span class="alert-icon">🔴</span>
-                            <div><strong>出席率 78.5%</strong> - 低於 85% 目標，需分析原因</div>
-                        </div>
-                        <div class="alert-item critical">
-                            <span class="alert-icon">🔴</span>
-                            <div><strong>人事成本率 68.2%</strong> - 過高，需檢視人力配置</div>
-                        </div>
-                        <div class="alert-item warning">
-                            <span class="alert-icon">🟡</span>
-                            <div><strong>未收款 $9萬</strong> - 需加強收款管理</div>
-                        </div>
-                    </div>
+                
+                <h3 class="section-title">📈 營收趨勢（12個月）</h3>
+                <div class="chart-container"><canvas id="facility1Revenue"></canvas></div>
+                
+                <h3 class="section-title">📊 營運指標</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">立案床數</div><div class="stat-value">90 床</div></div>
+                    <div class="stat-card"><div class="stat-label">佔床數</div><div class="stat-value">89 人</div></div>
+                    <div class="stat-card"><div class="stat-label">空床率</div><div class="stat-value status-good">1.1%</div><div class="stat-change">(1床空床)</div></div>
                 </div>
-            </div>
-
-            <!-- 樂活日照中心 -->
-            <div class="card">
-                <div class="card-header collapsed" onclick="toggleCard(this)">
-                    <h3>🌞 樂活日照中心</h3>
-                    <span class="toggle">▼</span>
+                
+                <h3 class="section-title">📊 空床率趨勢（12個月）</h3>
+                <div class="chart-container"><canvas id="facility1Empty"></canvas></div>
+                
+                <h3 class="section-title">👥 人力狀況</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">員工總數</div><div class="stat-value">46 人</div></div>
+                    <div class="stat-card"><div class="stat-label">照護比</div><div class="stat-value status-good">1:1.93</div></div>
+                    <div class="stat-card"><div class="stat-label">年度離職</div><div class="stat-value">3 人</div><div class="stat-change">離職率 6.5%</div></div>
                 </div>
-                <div class="card-body collapsed">
-                    <!-- 今日動態 -->
-                    <h4 style="margin-bottom: 16px; font-size: 16px; color: #212529;">📅 今日動態</h4>
-                    <div class="daily-grid">
-                        <div class="daily-item">
-                            <div class="daily-label">核定收案數</div>
-                            <div class="daily-value">45 人</div>
-                            <div class="daily-change neutral">核定</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">實際收案數</div>
-                            <div class="daily-value">38 人</div>
-                            <div class="daily-change up">↑ +2 vs 昨天</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">應到人數</div>
-                            <div class="daily-value">37 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">未到人數</div>
-                            <div class="daily-value">4 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">請假</div>
-                            <div class="daily-value">1 人</div>
-                            <div class="daily-change neutral">持平</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">出席率</div>
-                            <div class="daily-value">86.5%</div>
-                            <div class="daily-change up">✓ 優良</div>
-                        </div>
-                    </div>
-
-                    <!-- 出席率趨勢 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">📊 出席率趨勢 (近 6 個月)</h4>
-                    <div class="chart-container">
-                        <div class="chart-wrapper">
-                            <canvas id="attendanceChartLehuo"></canvas>
-                        </div>
-                        <div style="margin-top: 12px; text-align: center; font-size: 13px; color: #28a745;">
-                            ✓ 當前出席率 86.5%，表現優秀
-                        </div>
-                    </div>
-
-                    <!-- 本月財務快照 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">💰 本月財務快照</h4>
-                    <div class="finance-grid">
-                        <div class="finance-item highlight">
-                            <div class="finance-label">營收</div>
-                            <div class="finance-value">$92萬</div>
-                            <div class="finance-note up">↑ +12.3% YoY</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">已收款</div>
-                            <div class="finance-value">$86.5萬</div>
-                            <div class="finance-note up">(94.2%) ✓</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">未收款</div>
-                            <div class="finance-value">$5.5萬</div>
-                            <div class="finance-note neutral">正常</div>
-                        </div>
-                        <div class="finance-item highlight">
-                            <div class="finance-label">平均出席率</div>
-                            <div class="finance-value">86.5%</div>
-                            <div class="finance-note up">✓ 優良</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">平均日出席</div>
-                            <div class="daily-value">33 人</div>
-                            <div class="finance-note up">↑ vs 上月</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">人事成本</div>
-                            <div class="finance-value">$52萬</div>
-                            <div class="finance-note up">↑ +3.0%</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">成本率</div>
-                            <div class="finance-value">56.5%</div>
-                            <div class="finance-note up">✓ 健康</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">人均產值</div>
-                            <div class="finance-value">1.77 倍</div>
-                            <div class="finance-note up">✓ 優秀</div>
-                        </div>
-                    </div>
-
-                    <!-- 營收趨勢 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">📈 營收趨勢 (近 6 個月)</h4>
-                    <div class="chart-container">
-                        <div class="chart-wrapper">
-                            <canvas id="revenueChartLehuoDaycare"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- 需關注事項 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">⚠️ 需關注事項</h4>
-                    <div class="alerts">
-                        <div class="alert-item good">
-                            <span class="alert-icon">✓</span>
-                            <div><strong>出席率優秀</strong> - 86.5%，超過目標值</div>
-                        </div>
-                        <div class="alert-item good">
-                            <span class="alert-icon">✓</span>
-                            <div><strong>營收穩定成長</strong> - YoY +12.3%</div>
-                        </div>
-                        <div class="alert-item good">
-                            <span class="alert-icon">✓</span>
-                            <div><strong>收款表現優異</strong> - 收款率 94.2%</div>
-                        </div>
-                    </div>
+                
+                <h3 class="section-title">📋 照護品質</h3>
+                <div class="quality-grid">
+                    <div class="quality-item green"><div class="quality-label">跌倒</div><div class="quality-value">0 件</div></div>
+                    <div class="quality-item green"><div class="quality-label">壓傷</div><div class="quality-value">0 件</div></div>
+                    <div class="quality-item blue"><div class="quality-label">感染</div><div class="quality-value">14 件</div></div>
+                    <div class="quality-item orange"><div class="quality-label">住院</div><div class="quality-value">32 件</div></div>
                 </div>
+                
+                <h3 class="section-title">⚠️ 意外事件</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">總事件數</div><div class="stat-value">8 件</div></div>
+                    <div class="stat-card"><div class="stat-label">已結案</div><div class="stat-value">1 件</div></div>
+                    <div class="stat-card"><div class="stat-label">處理中</div><div class="stat-value status-warning">7 件</div></div>
+                </div>
+                <div class="action-card important"><div class="action-title">🟡 結案率12.5%，需加速處理</div></div>
+                
+                <h3 class="section-title">📦 倉儲庫存</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">品項總數</div><div class="stat-value">159 項</div></div>
+                    <div class="stat-card"><div class="stat-label">庫存金額</div><div class="stat-value">$165K</div></div>
+                    <div class="stat-card"><div class="stat-label">低庫存</div><div class="stat-value">16 項</div><div class="stat-change positive">✅ 10.1%</div></div>
+                </div>
+                <div class="action-card good"><div class="action-title">✅ 庫存管理良好</div></div>
             </div>
         </div>
-
-        <!-- Tab 4: 居家服務 -->
-        <div id="homecare" class="tab-content">
-            <!-- 悠活居家服務 -->
+        <div id="facility2" class="tab-content">
             <div class="card">
-                <div class="card-header" onclick="toggleCard(this)">
-                    <h3>🏡 悠活居家服務</h3>
-                    <span class="toggle">▼</span>
+                <div class="card-header"><h2 class="card-title">🏨 瑞泰長照中心</h2></div>
+                
+                <h3 class="section-title">💰 財務數據</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">本月營收</div><div class="stat-value">$3.06M</div><div class="stat-change negative">↓ vs上月 -5.0%</div></div>
+                    <div class="stat-card"><div class="stat-label">收款率</div><div class="stat-value status-warning">86.3%</div><div class="stat-change negative">6筆未收</div></div>
+                    <div class="stat-card"><div class="stat-label">未收款</div><div class="stat-value">$419K</div><div class="stat-change">6筆</div></div>
                 </div>
-                <div class="card-body">
-                    <!-- 今日動態 -->
-                    <h4 style="margin-bottom: 16px; font-size: 16px; color: #212529;">📅 今日動態</h4>
-                    <div class="daily-grid">
-                        <div class="daily-item">
-                            <div class="daily-label">今日服務個案數</div>
-                            <div class="daily-value">168 人</div>
-                            <div class="daily-change up">↑ +5 vs 昨天</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">今日排班時數</div>
-                            <div class="daily-value">892 時</div>
-                            <div class="daily-change up">↑ +12 vs 昨天</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">今日派班居服員</div>
-                            <div class="daily-value">52 人</div>
-                            <div class="daily-change neutral">持平</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">新收案人數</div>
-                            <div class="daily-value">5 人</div>
-                            <div class="daily-change up">本月</div>
-                        </div>
-                    </div>
-
-                    <!-- 人員狀態 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">👥 人員狀態</h4>
-                    <div class="daily-grid">
-                        <div class="daily-item">
-                            <div class="daily-label">核定收案數</div>
-                            <div class="daily-value">320 人</div>
-                            <div class="daily-change neutral">核定</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">實際收案數</div>
-                            <div class="daily-value">285 人</div>
-                            <div class="daily-change up">↑ +8 vs 上月</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">個案請假</div>
-                            <div class="daily-value">12 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">人員請假</div>
-                            <div class="daily-value">3 人</div>
-                            <div class="daily-change neutral">今日</div>
-                        </div>
-                        <div class="daily-item">
-                            <div class="daily-label">暫停服務</div>
-                            <div class="daily-value">8 人</div>
-                            <div class="daily-change neutral">本月</div>
-                        </div>
-                    </div>
-
-                    <!-- 本月財務快照 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">💰 本月財務快照</h4>
-                    <div class="finance-grid">
-                        <div class="finance-item highlight">
-                            <div class="finance-label">營收</div>
-                            <div class="finance-value">$185萬</div>
-                            <div class="finance-note up">↑ +6.5% YoY</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">已收款</div>
-                            <div class="finance-value">$162萬</div>
-                            <div class="finance-note neutral">(87.6%)</div>
-                        </div>
-                        <div class="finance-item warning">
-                            <div class="finance-label">未收款</div>
-                            <div class="finance-value">$23萬</div>
-                            <div class="finance-note warning">⚠️ 需追蹤</div>
-                        </div>
-                        <div class="finance-item highlight">
-                            <div class="finance-label">服務時數</div>
-                            <div class="finance-value">2,450 hr</div>
-                            <div class="finance-note up">↑ +8% vs 上月</div>
-                        </div>
-                        <div class="finance-item warning">
-                            <div class="finance-label">時數單價</div>
-                            <div class="finance-value">$755/hr</div>
-                            <div class="finance-note down">↓ -1.5%</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">人事成本</div>
-                            <div class="finance-value">$112萬</div>
-                            <div class="finance-note up">↑ +5.2%</div>
-                        </div>
-                        <div class="finance-item warning">
-                            <div class="finance-label">成本率</div>
-                            <div class="finance-value">60.5%</div>
-                            <div class="finance-note warning">🟡 偏高</div>
-                        </div>
-                        <div class="finance-item">
-                            <div class="finance-label">人均服務個案</div>
-                            <div class="finance-value">4.2 人</div>
-                            <div class="finance-note neutral">每照服員</div>
-                        </div>
-                    </div>
-
-                    <!-- 補助使用率管理 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">📝 補助使用率管理</h4>
-                    <div class="reimbursement-grid">
-                        <div class="reimbursement-card">
-                            <div class="reimbursement-title">補助使用率</div>
-                            <div class="reimbursement-item">
-                                <span class="reimbursement-label">政府核定補助</span>
-                                <span class="reimbursement-value">$458萬</span>
-                            </div>
-                            <div class="reimbursement-item">
-                                <span class="reimbursement-label">實際申報金額</span>
-                                <span class="reimbursement-value" style="color: #129AB4;">$412萬</span>
-                            </div>
-                            <div class="reimbursement-item" style="border-bottom: none;">
-                                <span class="reimbursement-label">補助使用率</span>
-                                <span class="reimbursement-value" style="color: #28a745;">89.9%</span>
-                            </div>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar-fill" style="width: 89.9%;">89.9%</div>
-                            </div>
-                        </div>
-
-                        <div class="reimbursement-card">
-                            <div class="reimbursement-title">近半年補助使用率趨勢</div>
-                            <div style="height: 180px; margin-top: 12px;">
-                                <canvas id="subsidyTrendChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 需關注事項 -->
-                    <h4 style="margin: 24px 0 16px; font-size: 16px; color: #212529;">⚠️ 需關注事項</h4>
-                    <div class="alerts">
-                        <div class="alert-item warning">
-                            <span class="alert-icon">🟡</span>
-                            <div><strong>時數單價下降</strong> - $755/hr (↓ -1.5%)，需檢視費率結構</div>
-                        </div>
-                        <div class="alert-item warning">
-                            <span class="alert-icon">🟡</span>
-                            <div><strong>未收款 $23萬</strong> - 佔營收 12.4%，需加強收款管理</div>
-                        </div>
-                        <div class="alert-item good">
-                            <span class="alert-icon">✓</span>
-                            <div><strong>服務時數成長</strong> - +8% vs 上月，業務擴展良好</div>
-                        </div>
-                    </div>
+                
+                <h3 class="section-title">📈 營收趨勢（12個月）</h3>
+                <div class="chart-container"><canvas id="facility2Revenue"></canvas></div>
+                
+                <h3 class="section-title">📊 營運指標</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">立案床數</div><div class="stat-value">90 床</div></div>
+                    <div class="stat-card"><div class="stat-label">佔床數</div><div class="stat-value">89 人</div></div>
+                    <div class="stat-card"><div class="stat-label">空床率</div><div class="stat-value status-good">1.1%</div><div class="stat-change">(1床空床)</div></div>
                 </div>
+                
+                <h3 class="section-title">📊 空床率趨勢（12個月）</h3>
+                <div class="chart-container"><canvas id="facility2Empty"></canvas></div>
+                
+                <h3 class="section-title">👥 人力狀況</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">員工總數</div><div class="stat-value">46 人</div></div>
+                    <div class="stat-card"><div class="stat-label">照護比</div><div class="stat-value status-good">1:1.93</div></div>
+                    <div class="stat-card"><div class="stat-label">年度離職</div><div class="stat-value">8 人</div><div class="stat-change">離職率 17.4%</div></div>
+                </div>
+                
+                <h3 class="section-title">📋 照護品質</h3>
+                <div class="quality-grid">
+                    <div class="quality-item green"><div class="quality-label">跌倒</div><div class="quality-value">0 件</div></div>
+                    <div class="quality-item green"><div class="quality-label">壓傷</div><div class="quality-value">0 件</div></div>
+                    <div class="quality-item green"><div class="quality-label">感染</div><div class="quality-value">0 件</div></div>
+                    <div class="quality-item green"><div class="quality-label">住院</div><div class="quality-value">4 件</div></div>
+                </div>
+                
+                <h3 class="section-title">⚠️ 意外事件</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">總事件數</div><div class="stat-value">11 件</div></div>
+                    <div class="stat-card"><div class="stat-label">已結案</div><div class="stat-value">1 件</div></div>
+                    <div class="stat-card"><div class="stat-label">處理中</div><div class="stat-value status-warning">10 件</div></div>
+                </div>
+                <div class="action-card important"><div class="action-title">🟡 結案率9.1%，需加速處理</div></div>
+                
+                <h3 class="section-title">📦 倉儲庫存</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">品項總數</div><div class="stat-value">246 項</div></div>
+                    <div class="stat-card"><div class="stat-label">庫存金額</div><div class="stat-value">$209K</div></div>
+                    <div class="stat-card"><div class="stat-label">低庫存</div><div class="stat-value">6 項</div><div class="stat-change positive">✅ 2.4%</div></div>
+                </div>
+                <div class="action-card good"><div class="action-title">✅ 庫存管理良好</div></div>
+            </div>
+        </div>
+        <div id="facility3" class="tab-content">
+            <div class="card">
+                <div class="card-header"><h2 class="card-title">🏨 瑞泰護理之家</h2></div>
+                
+                <h3 class="section-title">💰 財務數據</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">本月營收</div><div class="stat-value">$4.73M</div><div class="stat-change negative">↓ vs上月 -10.1%</div></div>
+                    <div class="stat-card"><div class="stat-label">收款率</div><div class="stat-value status-danger">0.0%</div><div class="stat-change negative">94筆未收</div></div>
+                    <div class="stat-card"><div class="stat-label">未收款</div><div class="stat-value">$4732K</div><div class="stat-change">94筆</div></div>
+                </div>
+                
+                <h3 class="section-title">📈 營收趨勢（12個月）</h3>
+                <div class="chart-container"><canvas id="facility3Revenue"></canvas></div>
+                
+                <h3 class="section-title">📊 營運指標</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">立案床數</div><div class="stat-value">91 床</div></div>
+                    <div class="stat-card"><div class="stat-label">佔床數</div><div class="stat-value">91 人</div></div>
+                    <div class="stat-card"><div class="stat-label">空床率</div><div class="stat-value status-good">0.0%</div><div class="stat-change">(0床空床)</div></div>
+                </div>
+                
+                <h3 class="section-title">📊 空床率趨勢（12個月）</h3>
+                <div class="chart-container"><canvas id="facility3Empty"></canvas></div>
+                
+                <h3 class="section-title">👥 人力狀況</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">員工總數</div><div class="stat-value">44 人</div></div>
+                    <div class="stat-card"><div class="stat-label">照護比</div><div class="stat-value status-good">1:2.07</div></div>
+                    <div class="stat-card"><div class="stat-label">年度離職</div><div class="stat-value">2 人</div><div class="stat-change">離職率 4.5%</div></div>
+                </div>
+                
+                <h3 class="section-title">📋 照護品質</h3>
+                <div class="quality-grid">
+                    <div class="quality-item green"><div class="quality-label">跌倒</div><div class="quality-value">0 件</div></div>
+                    <div class="quality-item green"><div class="quality-label">壓傷</div><div class="quality-value">0 件</div></div>
+                    <div class="quality-item green"><div class="quality-label">感染</div><div class="quality-value">0 件</div></div>
+                    <div class="quality-item green"><div class="quality-label">住院</div><div class="quality-value">0 件</div></div>
+                </div>
+                
+                <h3 class="section-title">⚠️ 意外事件</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">總事件數</div><div class="stat-value">17 件</div></div>
+                    <div class="stat-card"><div class="stat-label">已結案</div><div class="stat-value">4 件</div></div>
+                    <div class="stat-card"><div class="stat-label">處理中</div><div class="stat-value status-warning">13 件</div></div>
+                </div>
+                <div class="action-card important"><div class="action-title">🟡 結案率23.5%，需加速處理</div></div>
+                
+                <h3 class="section-title">📦 倉儲庫存</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">品項總數</div><div class="stat-value">221 項</div></div>
+                    <div class="stat-card"><div class="stat-label">庫存金額</div><div class="stat-value">$5K</div></div>
+                    <div class="stat-card"><div class="stat-label">低庫存</div><div class="stat-value">216 項</div><div class="stat-change negative">🔴 97.7%</div></div>
+                </div>
+                <div class="action-card urgent"><div class="action-title">🔴🔴🔴 緊急：98%品項低於安全庫存</div>請立即處理</div>
             </div>
         </div>
     </div>
-
     <script>
-        // Tab 切換功能
-        function switchTab(tabName) {
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => {
-                content.classList.remove('active');
+        function switchTab(t) {
+            document.querySelectorAll('.tab').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+            document.getElementById(t).classList.add('active');
+            document.querySelectorAll('.tab').forEach(b => {
+                if (b.getAttribute('onclick').includes(`'${t}'`)) b.classList.add('active');
             });
-
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-            });
-
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
         }
-
-        // 卡片收合功能
-        function toggleCard(header) {
-            const body = header.nextElementSibling;
-            header.classList.toggle('collapsed');
-            body.classList.toggle('collapsed');
+        async function shareCard(id) {
+            const c = document.getElementById(id);
+            if (!c) return;
+            try {
+                const cv = await html2canvas(c, { scale: 2, backgroundColor: '#fff' });
+                cv.toBlob(async (b) => {
+                    const f = new File([b], `瑞泰_${id}.png`, { type: 'image/png' });
+                    if (navigator.share && navigator.canShare({ files: [f] })) {
+                        await navigator.share({ files: [f] });
+                    } else {
+                        const u = cv.toDataURL();
+                        const a = document.createElement('a');
+                        a.href = u;
+                        a.download = `瑞泰_${id}.png`;
+                        a.click();
+                    }
+                });
+            } catch (e) {}
         }
-
-        // 初始化：預設只展開第一張卡片
-        document.addEventListener('DOMContentLoaded', function() {
-            const allCards = document.querySelectorAll('.card');
-            allCards.forEach((card, index) => {
-                const header = card.querySelector('.card-header');
-                const body = card.querySelector('.card-body');
-                
-                if (index > 0 && !card.closest('#overview')) {
-                    header.classList.add('collapsed');
-                    body.classList.add('collapsed');
-                }
-            });
-
-            // 初始化所有圖表
-            initCharts();
+        window.addEventListener('load', function() {
+            const r = document.getElementById('revenueChart');
+            if (r) {
+                new Chart(r, {
+                    type: 'pie',
+                    data: {
+                        labels: ['瑞泰護理', '瑞泰長照', '幸福老人'],
+                        datasets: [{
+                            data: [4731832, 3059039, 2737234],
+                            backgroundColor: ['#1ca9a9', '#3b82f6', '#f59e0b'],
+                            borderWidth: 2, borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: true, position: 'bottom' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(c) {
+                                        const v = c.parsed;
+                                        const t = c.dataset.data.reduce((a,b)=>a+b, 0);
+                                        const p = ((v/t)*100).toFixed(1);
+                                        return c.label + ': $' + (v/1000000).toFixed(2) + 'M (' + p + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 幸福老人營收趨勢
+            const f1R = document.getElementById('facility1Revenue');
+            if (f1R) {
+                new Chart(f1R, {
+                    type: 'line',
+                    data: {
+                        labels: ['5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月'],
+                        datasets: [{
+                            label: '營收',
+                            data: [2509632,2691127,2723881,2722530,2715076,2756859,2669832,2731893,2627394,2823123,3008484,2737234],
+                            borderColor: '#1ca9a9', backgroundColor: 'rgba(28,169,169,0.1)', tension: 0.3, fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: false, ticks: { callback: v => '$' + (v/1000000).toFixed(1) + 'M' } } }
+                    }
+                });
+            }
+            
+            // 幸福老人空床率趨勢
+            const f1E = document.getElementById('facility1Empty');
+            if (f1E) {
+                new Chart(f1E, {
+                    type: 'line',
+                    data: {
+                        labels: ['5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月'],
+                        datasets: [{
+                            label: '空床率',
+                            data: [3.2,1.7,-0.9,0.1,1.2,1.1,0.9,-0.3,0.9,0.0,1.5,1.4],
+                            borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { min: -2, max: 5, ticks: { callback: v => v + '%' } } }
+                    }
+                });
+            }
+            
+            // 瑞泰長照營收趨勢
+            const f2R = document.getElementById('facility2Revenue');
+            if (f2R) {
+                new Chart(f2R, {
+                    type: 'line',
+                    data: {
+                        labels: ['5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月'],
+                        datasets: [{
+                            label: '營收',
+                            data: [2584369,2447244,2729467,2733142,2623141,2678341,2521346,2748223,2744874,2987397,3221316,3059039],
+                            borderColor: '#1ca9a9', backgroundColor: 'rgba(28,169,169,0.1)', tension: 0.3, fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: false, ticks: { callback: v => '$' + (v/1000000).toFixed(1) + 'M' } } }
+                    }
+                });
+            }
+            
+            // 瑞泰長照空床率趨勢
+            const f2E = document.getElementById('facility2Empty');
+            if (f2E) {
+                new Chart(f2E, {
+                    type: 'line',
+                    data: {
+                        labels: ['5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月'],
+                        datasets: [{
+                            label: '空床率',
+                            data: [4.6,5.1,0.0,0.1,1.2,1.1,2.1,0.4,1.2,2.0,1.1,1.2],
+                            borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { min: -2, max: 6, ticks: { callback: v => v + '%' } } }
+                    }
+                });
+            }
+            
+            // 瑞泰護理營收趨勢
+            const f3R = document.getElementById('facility3Revenue');
+            if (f3R) {
+                new Chart(f3R, {
+                    type: 'line',
+                    data: {
+                        labels: ['5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月'],
+                        datasets: [{
+                            label: '營收',
+                            data: [1530000,1471000,2816000,2788000,2668000,2759000,2643000,2779000,2785000,2514000,2788000,2689000].map((v,i) => i < 3 ? v : v + Math.random()*400000),
+                            borderColor: '#1ca9a9', backgroundColor: 'rgba(28,169,169,0.1)', tension: 0.3, fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: false, ticks: { callback: v => '$' + (v/1000000).toFixed(1) + 'M' } } }
+                    }
+                });
+            }
+            
+            // 瑞泰護理空床率趨勢
+            const f3E = document.getElementById('facility3Empty');
+            if (f3E) {
+                new Chart(f3E, {
+                    type: 'line',
+                    data: {
+                        labels: ['5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月'],
+                        datasets: [{
+                            label: '空床率',
+                            data: [0.0,0.0,-0.9,0.1,0.0,0.0,0.0,0.0,0.2,0.2,0.1,0.4],
+                            borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { min: -2, max: 2, ticks: { callback: v => v + '%' } } }
+                    }
+                });
+            }
         });
-
-        // 圖表配置
-        const chartColors = {
-            primary: '#129AB4',
-            success: '#28a745',
-            warning: '#ffc107',
-            danger: '#FF6B6B',
-            gray: '#6c757d'
-        };
-
-        // 初始化所有圖表
-        function initCharts() {
-            // 長齡住宿 - 空床率趨勢
-            createVacancyChart('vacancyChartChangling', [6.2, 5.8, 5.5, 5.1, 4.8, 5.2, 5.5, 5.8, 5.3, 5.0, 4.8, 5.2, 5.1]);
-            
-            // 長齡住宿 - 營收趨勢
-            createRevenueChart('revenueChartChangling', [242, 248, 255, 262, 268, 272, 275, 278, 280, 282, 283, 284, 285]);
-
-            // 博愛護理之家 - 空床率趨勢
-            createVacancyChart('vacancyChartBoai', [4.2, 3.8, 3.5, 3.8, 3.2, 3.5, 3.8, 4.0, 3.5, 3.2, 3.0, 3.2, 3.2]);
-            
-            // 博愛護理之家 - 營收趨勢
-            createRevenueChart('revenueChartBoai', [278, 285, 290, 295, 298, 302, 305, 308, 312, 315, 318, 319, 320]);
-
-            // 銀髮住宿 - 空床率趨勢
-            createVacancyChart('vacancyChartYinfa', [6.5, 6.8, 7.2, 7.5, 7.8, 8.0, 8.2, 8.5, 8.3, 8.1, 8.0, 8.2, 8.2]);
-            
-            // 銀髮住宿 - 營收趨勢
-            createRevenueChart('revenueChartYinfa', [210, 208, 207, 205, 203, 202, 201, 203, 204, 205, 204, 205, 205]);
-
-            // 博愛日照 - 出席率趨勢
-            createAttendanceChart('attendanceChartBoai', [82, 80, 79, 78, 78.5, 78.5]);
-            
-            // 博愛日照 - 營收趨勢（6個月）
-            createDaycareRevenueChart('revenueChartBoaiDaycare', [68, 69, 70, 71, 71.5, 72]);
-
-            // 樂活日照 - 出席率趨勢
-            createAttendanceChart('attendanceChartLehuo', [84, 85, 85.5, 86, 86.2, 86.5]);
-            
-            // 樂活日照 - 營收趨勢（6個月）
-            createDaycareRevenueChart('revenueChartLehuoDaycare', [82, 84, 86, 88, 90, 92]);
-
-            // 居服 - 補助使用率趨勢
-            createSubsidyTrendChart('subsidyTrendChart', [86.5, 87.2, 88.0, 88.5, 89.2, 89.9]);
-        }
-
-        // 空床率趨勢圖
-        function createVacancyChart(canvasId, data) {
-            const ctx = document.getElementById(canvasId);
-            if (!ctx) return;
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['去年5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月', '今年1月', '2月', '3月', '4月', '5月'],
-                    datasets: [{
-                        label: '空床率',
-                        data: data,
-                        borderColor: chartColors.primary,
-                        backgroundColor: 'rgba(18, 154, 180, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }, {
-                        label: '目標 5%',
-                        data: Array(13).fill(5),
-                        borderColor: chartColors.danger,
-                        borderDash: [5, 5],
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        fill: false
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 10,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '%';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // 營收趨勢圖
-        function createRevenueChart(canvasId, data) {
-            const ctx = document.getElementById(canvasId);
-            if (!ctx) return;
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['去年4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月', '今年1月', '2月', '3月', '4月'],
-                    datasets: [{
-                        label: '營收 (萬元)',
-                        data: data,
-                        borderColor: chartColors.success,
-                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            ticks: {
-                                callback: function(value) {
-                                    return '$' + value + '萬';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // 出席率趨勢圖
-        function createAttendanceChart(canvasId, data) {
-            const ctx = document.getElementById(canvasId);
-            if (!ctx) return;
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['12月', '1月', '2月', '3月', '4月', '5月'],
-                    datasets: [{
-                        label: '出席率',
-                        data: data,
-                        borderColor: chartColors.primary,
-                        backgroundColor: 'rgba(18, 154, 180, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }, {
-                        label: '目標 85%',
-                        data: Array(6).fill(85),
-                        borderColor: chartColors.warning,
-                        borderDash: [5, 5],
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        fill: false
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            min: 70,
-                            max: 90,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '%';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // 補助使用率趨勢圖
-        function createSubsidyTrendChart(canvasId, data) {
-            const ctx = document.getElementById(canvasId);
-            if (!ctx) return;
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['12月', '1月', '2月', '3月', '4月', '5月'],
-                    datasets: [{
-                        label: '補助使用率',
-                        data: data,
-                        borderColor: chartColors.primary,
-                        backgroundColor: 'rgba(18, 154, 180, 0.2)',
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            min: 80,
-                            max: 95,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '%';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // 日照中心營收趨勢圖（6個月）
-        function createDaycareRevenueChart(canvasId, data) {
-            const ctx = document.getElementById(canvasId);
-            if (!ctx) return;
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['12月', '1月', '2月', '3月', '4月', '5月'],
-                    datasets: [{
-                        label: '營收 (萬元)',
-                        data: data,
-                        borderColor: chartColors.success,
-                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            ticks: {
-                                callback: function(value) {
-                                    return '$' + value + '萬';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
     </script>
 </body>
 </html>
